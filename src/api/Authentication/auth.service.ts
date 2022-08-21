@@ -79,4 +79,34 @@ export class AuthService {
     delete user.password;
     return user;
   }
+
+  async decodeConfirmationToken(token: string) {
+    try {
+      const payload = await this.jwtService.verify(token, {
+        secret: this.configService.get('JWT_SECRET'),
+      });
+      if (typeof payload === 'object' && 'email' in payload) {
+        return payload.email;
+      }
+      throw new BadRequestException();
+    } catch (error) {
+      if (error?.name === 'TokenExpiredError') {
+        throw new BadRequestException('Email confirmation token expired');
+      }
+      throw new BadRequestException('Bad confirmation token');
+    }
+  }
+
+  async confirmEmail(email) {
+    const user = await this.userRepository.findByEmail(email);
+    if (user.isStatus) {
+      throw new BadRequestException('Email already confirmed');
+    }
+    await this.markEmailAsConfirmed(email);
+  }
+
+  private async markEmailAsConfirmed(email: string) {
+    const user = await this.userRepository.findByEmail(email);
+    return this.userRepository.confirm(user.id);
+  }
 }

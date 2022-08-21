@@ -9,6 +9,7 @@ import { CommetModule } from './api/commet/commet.module';
 import { AuthModule } from './api/Authentication/auth.module';
 import { MailModule } from './api/mail/mail.module';
 import { ApiTokenCheckMiddleware } from './api/commons/middleware/api-token-check.middleware';
+import { GoogleOauthModule } from './api/google-oauth/google-oauth.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ApiTokenCheckMiddleware } from './api/commons/middleware/api-token-chec
     CommetModule,
     AuthModule,
     MailModule,
+    GoogleOauthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

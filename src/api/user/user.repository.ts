@@ -44,4 +44,8 @@ export class UserRepository {
   delete(id: EntityId): Promise<DeleteResult> {
     return this.userRepository.delete(id);
   }
+
+  async confirm(id: number) {
+    return this.userRepository.update(id, { isStatus: true });
+  }
 }

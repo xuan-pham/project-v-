@@ -4,9 +4,7 @@ import {
   Delete,
   Get,
   Param,
-  Post,
   Put,
-  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -16,7 +14,6 @@ import { Users } from '../../config/entity/user.entity';
 import { DeleteResult } from 'typeorm';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/user.dto';
-import { CreateAccount } from '../Authentication/dto/authentication.dto';
 import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { JwtAuthenticationGuard } from '../Authentication/guard/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -25,7 +22,7 @@ import { storage } from '../commons/image/imageProfile.image';
 @ApiBearerAuth()
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService) {}
 
   @UseGuards(JwtAuthenticationGuard)
   @Get()

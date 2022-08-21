@@ -19,7 +19,7 @@ import { UpdatePostDto } from './dto/updatePost.dto';
 
 @Controller('post')
 export class PostController {
-  constructor(private readonly postService: PostService) { }
+  constructor(private readonly postService: PostService) {}
 
   @UseGuards(JwtAuthenticationGuard)
   @Get()

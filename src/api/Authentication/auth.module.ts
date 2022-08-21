@@ -9,8 +9,10 @@ import { UserRepository } from '../user/user.repository';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStratery } from './stratery/jwt.stratery';
+import { MailModule } from '../mail/mail.module';
 @Module({
   imports: [
+    MailModule,
     PassportModule,
     TypeOrmModule.forFeature([Users]),
     ConfigModule,
