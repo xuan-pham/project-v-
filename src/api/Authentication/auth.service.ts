@@ -13,8 +13,8 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async login(req) {
-    const { email } = req.user;
+  async logIn(request) {
+    const { email } = request;
     const checkActive = await this.checkEmailActive(email);
     return this.getCookieWithJwtAccessToken(checkActive);
   }

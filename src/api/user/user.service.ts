@@ -9,7 +9,7 @@ import { UpdateUserDto } from './dto/user.dto';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userReponsitory: UserRepository) { }
+  constructor(private readonly userReponsitory: UserRepository) {}
 
   async findByEmail(email: string): Promise<Users> {
     return this.userReponsitory.findByEmail(email);
@@ -57,5 +57,19 @@ export class UserService {
 
   async delete(id: number) {
     return this.userReponsitory.delete(id);
+  }
+
+  async createWithGoogle(data) {
+    try {
+      const newUser = {
+        email: data.email,
+        avatar: data.avatar,
+        isStatus: true,
+        isRegisteredWithGoogle: true,
+      };
+      return this.userReponsitory.store(newUser);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 }
