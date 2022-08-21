@@ -1,15 +1,51 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, DeleteResult } from 'typeorm';
+import { EntityId } from 'typeorm/repository/EntityId';
 import { Users } from '../../config/entity/user.entity';
 
-@EntityRepository(Users)
-export class UserRepository extends Repository<Users> {
-  getActiveUsers(): Promise<Users[]> {
-    return this.createQueryBuilder()
-      .where('isStatus=:active', { active: false })
-      .getMany();
+export class UserRepository {
+  constructor(
+    @InjectRepository(Users)
+    private userRepository: Repository<Users>,
+  ) {}
+  findAllInfoUserById(id: number) {
+    return this.userRepository.find({
+      relations: {
+        posts: true,
+      },
+      where: { id },
+    });
   }
 
-  findByEmail(email: string): Promise<Users> {
-    return this.createQueryBuilder().where(email).getOne();
+  findById(id: EntityId) {
+    return this.userRepository.findOneById(id);
+  }
+
+  findByEmail(email: string) {
+    return this.userRepository.findOne({ where: { email } });
+  }
+
+  index() {
+    return this.userRepository.find();
+  }
+
+  store(data) {
+    return this.userRepository.save(data);
+  }
+
+  async update(id: EntityId, data: any, files) {
+    await this.userRepository.update(id, {
+      ...data,
+      avatar: files.filename,
+    });
+    return this.findById(id);
+  }
+
+  delete(id: EntityId): Promise<DeleteResult> {
+    return this.userRepository.delete(id);
+  }
+
+  async confirm(id: number) {
+    return this.userRepository.update(id, { isStatus: true });
   }
 }

@@ -17,7 +17,7 @@ import { Comments } from '../entity/comment.entity';
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
         entities: [Users, Posts, Comments],
-        synchronize: false,
+        synchronize: true,
       }),
     }),
   ],
