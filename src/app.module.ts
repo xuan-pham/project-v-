@@ -10,6 +10,7 @@ import { AuthModule } from './api/Authentication/auth.module';
 import { MailModule } from './api/mail/mail.module';
 import { ApiTokenCheckMiddleware } from './api/commons/middleware/api-token-check.middleware';
 import { GoogleOauthModule } from './api/google-oauth/google-oauth.module';
+import { CommentModule } from './api/comment/comment.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { GoogleOauthModule } from './api/google-oauth/google-oauth.module';
     AuthModule,
     MailModule,
     GoogleOauthModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

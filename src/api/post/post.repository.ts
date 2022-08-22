@@ -10,7 +10,7 @@ export class PostRepository {
   ) {}
 
   findById(id: number) {
-    return this.postRepository.findOneById(id);
+    return this.postRepository.findOne({ where: { id } });
   }
 
   async findAllDataPostById(id: number) {

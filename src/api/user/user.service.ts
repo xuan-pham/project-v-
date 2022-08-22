@@ -43,6 +43,7 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User not exist');
     }
+    delete user.password;
     return user;
   }
 

@@ -51,4 +51,12 @@ export class PostService {
     }
     return post;
   }
+
+  async getPostById(id: number) {
+    const post = await this.postReponsitory.findById(id);
+    if (!post) {
+      throw new BadRequestException('Post not exist');
+    }
+    return post;
+  }
 }
