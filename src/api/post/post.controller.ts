@@ -16,7 +16,8 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { storagePost } from '../commons/image/imagePost.image';
 import { JwtAuthenticationGuard } from '../Authentication/guard/jwt-auth.guard';
 import { UpdatePostDto } from './dto/updatePost.dto';
-
+import { ApiBearerAuth } from '@nestjs/swagger';
+@ApiBearerAuth()
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}

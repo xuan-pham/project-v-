@@ -19,9 +19,7 @@ export class ApiTokenCheckMiddleware implements NestMiddleware {
         accessToken,
         this.configService.get('JWT_SECRET'),
       );
-      console.log(data);
       const userId = data.id;
-      console.log(userId);
       user = await this.userReponsitory.findById(userId);
     } catch (error) {
       throw new ForbiddenException('Please register or sign in.');

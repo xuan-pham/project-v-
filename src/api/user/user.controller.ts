@@ -31,8 +31,9 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthenticationGuard)
-  @Get('/:id')
-  show(@Param('id') id: number): Promise<Users[]> {
+  @Get('info')
+  show(@Request() req): Promise<Users[]> {
+    const id = req.user.id;
     return this.userService.getAllInfo(+id);
   }
 

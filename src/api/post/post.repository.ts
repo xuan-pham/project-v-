@@ -9,7 +9,7 @@ export class PostRepository {
     private postRepository: Repository<Posts>,
   ) {}
 
-  findById(id: number) {
+  async findById(id: number) {
     return this.postRepository.findOne({ where: { id } });
   }
 
@@ -23,11 +23,11 @@ export class PostRepository {
     return post;
   }
 
-  index() {
+  async index() {
     return this.postRepository.find();
   }
 
-  store(id, data, nameFiles) {
+  async store(id, data, nameFiles) {
     return this.postRepository.save({
       ...data,
       author: id,
@@ -43,7 +43,7 @@ export class PostRepository {
     return this.findById(id);
   }
 
-  delete(id: EntityId): Promise<DeleteResult> {
+  async delete(id: EntityId): Promise<DeleteResult> {
     return this.postRepository.delete(id);
   }
 }

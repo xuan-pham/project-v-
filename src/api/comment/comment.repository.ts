@@ -11,10 +11,11 @@ export class CommentRepository {
   ) {}
 
   async findPost(id: number) {
-    return this.commentRepository.find({
+    const post = this.commentRepository.find({
       where: { post: { id } },
       relations: ['author', 'post'],
     });
+    return post;
   }
 
   async findUser(id: number) {

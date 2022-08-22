@@ -48,7 +48,6 @@ export class UserService {
   }
 
   async update(id: number, data, files) {
-    console.log(data);
     const user = await this.userReponsitory.update(+id, data, files);
     if (!user) {
       throw new BadRequestException(`Can't update user`);

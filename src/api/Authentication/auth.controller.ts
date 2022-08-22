@@ -26,7 +26,7 @@ export class AuthController {
   @Post('login')
   @ApiBody({ type: LoginDto })
   async login(@Request() req) {
-    return this.authService.logIn(req);
+    return this.authService.logIn(req.user);
   }
   @Post('signup')
   async signUp(@Body() data: CreateAccount) {

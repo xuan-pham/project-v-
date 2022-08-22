@@ -24,7 +24,7 @@ export class PostService {
     }, []);
     const post = await this.postReponsitory.store(id, data, nameFiles);
     if (!post) {
-      throw new BadRequestException('Post not exist');
+      throw new BadRequestException(`Can't create post`);
     }
     return post;
   }

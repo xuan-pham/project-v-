@@ -23,8 +23,8 @@ export class CommentController {
 
   //@Query('page') page: number
   @Get('post/:id')
-  showCommentsByPost(@Param('id') post) {
-    return this.commentService.showByPost(post);
+  showCommentsByPost(@Param('id') id: string) {
+    return this.commentService.showByPost(+id);
   }
 
   //   @Query('page') page: number;

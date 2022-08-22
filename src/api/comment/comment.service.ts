@@ -23,7 +23,6 @@ export class CommentService {
     try {
       const userId = request.user.id;
       const post = await this.postService.getPostById(id);
-      console.log(post);
       const user = await this.userService.findById(userId);
       const comment = {
         ...data,
@@ -38,7 +37,7 @@ export class CommentService {
 
   async showByPost(id: number) {
     const comments = await this.commentRepository.findPost(id);
-    if (this.isRealValue(comments)) {
+    if (!comments) {
       throw new BadRequestException('Post not exist');
     }
     return comments;
@@ -46,8 +45,7 @@ export class CommentService {
 
   async showByUser(id: number) {
     const comments = await this.commentRepository.findUser(id);
-    console.log(typeof comments);
-    if (this.isRealValue(comments)) {
+    if (!comments) {
       throw new BadRequestException('Author not exist');
     }
     return comments;
