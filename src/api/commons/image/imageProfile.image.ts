@@ -1,5 +1,5 @@
 import { diskStorage } from 'multer';
-const { v4: uuidv4 } = require('uuid');
+import { v4 as uuidv4 } from 'uuid';
 export const storage = {
   storage: diskStorage({
     destination: './uploads/profile',
