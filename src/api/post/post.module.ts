@@ -6,10 +6,12 @@ import { Posts } from '../../config/entity/post.entity';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PostRepository } from './post.repository';
+import { Comments } from '../../config/entity/comment.entity';
+import { Users } from '../../config/entity/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Posts]),
+    TypeOrmModule.forFeature([Posts, Comments, Users]),
     ConfigModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
@@ -20,5 +22,6 @@ import { PostRepository } from './post.repository';
   ],
   controllers: [PostController],
   providers: [PostService, PostRepository],
+  exports: [PostService],
 })
 export class PostModule {}
