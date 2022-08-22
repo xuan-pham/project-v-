@@ -11,6 +11,7 @@ import { MailModule } from './api/mail/mail.module';
 import { ApiTokenCheckMiddleware } from './api/commons/middleware/api-token-check.middleware';
 import { GoogleOauthModule } from './api/google-oauth/google-oauth.module';
 import { CommentModule } from './api/comment/comment.module';
+import { MessageModule } from './api/message/message.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { CommentModule } from './api/comment/comment.module';
     MailModule,
     GoogleOauthModule,
     CommentModule,
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
