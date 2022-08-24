@@ -17,8 +17,8 @@ export class UserRepository {
     });
   }
 
-  findById(id: EntityId) {
-    return this.userRepository.findOneById(id);
+  findById(id: number) {
+    return this.userRepository.findOne({ where: { id } });
   }
 
   findByEmail(email: string) {
@@ -29,11 +29,11 @@ export class UserRepository {
     return this.userRepository.find();
   }
 
-  store(data) {
+  store(data: any) {
     return this.userRepository.save(data);
   }
 
-  async update(id: EntityId, data: any, files) {
+  async update(id: number, data: any, files) {
     await this.userRepository.update(id, {
       ...data,
       avatar: files.filename,
@@ -41,11 +41,11 @@ export class UserRepository {
     return this.findById(id);
   }
 
-  delete(id: EntityId): Promise<DeleteResult> {
+  delete(id: number): Promise<DeleteResult> {
     return this.userRepository.delete(id);
   }
 
-  async confirm(id: number) {
+  confirm(id: number) {
     return this.userRepository.update(id, { isStatus: true });
   }
 }

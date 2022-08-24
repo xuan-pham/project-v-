@@ -59,4 +59,8 @@ export class PostService {
     }
     return post;
   }
+
+  async getDataQuery(alias: string) {
+    return this.postReponsitory.queryBuilder(alias);
+  }
 }

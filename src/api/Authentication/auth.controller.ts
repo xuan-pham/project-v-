@@ -13,7 +13,6 @@ import { CreateAccount, LoginDto } from './dto/authentication.dto';
 import { ApiBody } from '@nestjs/swagger';
 import { JwtAuthenticationGuard } from './guard/jwt-auth.guard';
 import { MailService } from '../mail/mail.service';
-import { get } from 'http';
 
 @Controller('auth')
 export class AuthController {
@@ -31,7 +30,7 @@ export class AuthController {
   @Post('signup')
   async signUp(@Body() data: CreateAccount) {
     await this.authService.createAccount(data);
-    await this.mailService.sendUserConfirmation(data.email);
+    // await this.mailService.sendUserConfirmation(data.email);
     return `Please check your email to activate your account`;
   }
 

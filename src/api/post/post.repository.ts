@@ -9,25 +9,24 @@ export class PostRepository {
     private postRepository: Repository<Posts>,
   ) {}
 
-  async findById(id: number) {
+  findById(id: number) {
     return this.postRepository.findOne({ where: { id } });
   }
 
-  async findAllDataPostById(id: number) {
-    const post = await this.postRepository.find({
+  findAllDataPostById(id: number) {
+    return this.postRepository.find({
       relations: {
         author: true,
       },
       where: { id },
     });
-    return post;
   }
 
-  async index() {
+  index() {
     return this.postRepository.find();
   }
 
-  async store(id, data, nameFiles) {
+  store(id, data, nameFiles) {
     return this.postRepository.save({
       ...data,
       author: id,
@@ -43,7 +42,11 @@ export class PostRepository {
     return this.findById(id);
   }
 
-  async delete(id: EntityId): Promise<DeleteResult> {
+  delete(id: EntityId): Promise<DeleteResult> {
     return this.postRepository.delete(id);
+  }
+
+  queryBuilder(alias: string) {
+    return this.postRepository.createQueryBuilder(alias);
   }
 }
