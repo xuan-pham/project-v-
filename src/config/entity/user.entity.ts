@@ -5,6 +5,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Role } from '../../api/commons/role/enum/role.enum';
 import { Posts } from './post.entity';
 
 @Entity()
@@ -33,8 +34,12 @@ export class Users extends BaseEntity {
   @Column({ nullable: true })
   avatar: string;
 
-  @Column({ default: 'user' })
-  role: string;
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.User,
+  })
+  role: Role;
 
   @OneToMany(() => Posts, (post: Posts) => post.author)
   posts?: Posts[];

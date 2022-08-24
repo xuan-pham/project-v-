@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { CreateAccount } from './dto/authentication.dto';
+import { CreateAccount, LoginDto } from './dto/authentication.dto';
 import { UserRepository } from '../user/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -11,9 +11,9 @@ export class AuthService {
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
-  async logIn(request) {
+  async logIn(request: LoginDto) {
     const { email } = request;
     const checkActive = await this.checkEmailActive(email);
     return this.getCookieWithJwtAccessToken(checkActive);
@@ -48,7 +48,7 @@ export class AuthService {
     return result;
   }
 
-  private async verifyPass(pass: string, hash) {
+  private async verifyPass(pass: string, hash: string) {
     const isMach = await bcrypt.compare(pass, hash);
     if (!isMach) {
       throw new BadRequestException('Wrong credentials provided');
@@ -59,7 +59,7 @@ export class AuthService {
     return await bcrypt.hash(pass, 10);
   }
 
-  async getCookieWithJwtAccessToken(data: any) {
+  async getCookieWithJwtAccessToken(data) {
     const { id, email } = data;
     const payload = { id, email };
     const token = this.jwtService.sign(payload, {
@@ -97,7 +97,7 @@ export class AuthService {
     }
   }
 
-  async confirmEmail(email) {
+  async confirmEmail(email: string) {
     const user = await this.userRepository.findByEmail(email);
     if (user.isStatus) {
       throw new BadRequestException('Email already confirmed');

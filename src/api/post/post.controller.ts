@@ -17,19 +17,24 @@ import { storagePost } from '../commons/image/imagePost.image';
 import { JwtAuthenticationGuard } from '../Authentication/guard/jwt-auth.guard';
 import { UpdatePostDto } from './dto/updatePost.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { Posts } from '../../config/entity/post.entity';
+import { DeleteResult } from 'typeorm';
+import { RoleGuard } from '../commons/role/guard/role.guard';
+import { Role } from '../commons/role/enum/role.enum';
 @ApiBearerAuth()
 @Controller('post')
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(private readonly postService: PostService) { }
 
-  @UseGuards(JwtAuthenticationGuard)
   @Get()
-  index() {
+  @UseGuards(RoleGuard(Role.Admin))
+  @UseGuards(JwtAuthenticationGuard)
+  index(): Promise<Posts[]> {
     return this.postService.index();
   }
 
   @Get('/:id')
-  show(@Param('id') id: string) {
+  show(@Param('id') id: string): Promise<Posts[]> {
     return this.postService.getAllInfo(+id);
   }
 
@@ -40,7 +45,7 @@ export class PostController {
     @Request() req,
     @Body() data,
     @UploadedFiles() images: Array<Express.Multer.File>,
-  ) {
+  ): Promise<Posts> {
     const id = req.user.id;
     return this.postService.store(+id, data, images);
   }
@@ -52,12 +57,12 @@ export class PostController {
     @Param('id') id: string,
     @Body() data: UpdatePostDto,
     @UploadedFiles() files: Array<Express.Multer.File>,
-  ) {
+  ): Promise<Posts> {
     return this.postService.update(+id, data, files);
   }
 
   @Delete('delete/:id')
-  delete(@Param('id') id: string) {
+  delete(@Param('id') id: string): Promise<DeleteResult> {
     return this.postService.delete(+id);
   }
 }

@@ -18,14 +18,17 @@ import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { JwtAuthenticationGuard } from '../Authentication/guard/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { storage } from '../commons/image/imageProfile.image';
+import { RoleGuard } from '../commons/role/guard/role.guard';
+import { Role } from '../commons/role/enum/role.enum';
 
 @ApiBearerAuth()
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) { }
 
-  @UseGuards(JwtAuthenticationGuard)
   @Get()
+  @UseGuards(RoleGuard(Role.Admin))
+  @UseGuards(JwtAuthenticationGuard)
   index(): Promise<Users[]> {
     return this.userService.index();
   }
