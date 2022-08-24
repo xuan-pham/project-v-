@@ -8,11 +8,11 @@ import { Posts } from '../../config/entity/post.entity';
 
 @Injectable()
 export class PostService {
-  constructor(private readonly postReponsitory: PostRepository) {}
+  constructor(private readonly postReponsitory: PostRepository) { }
 
   async index(): Promise<Posts[]> {
     const post = await this.postReponsitory.index();
-    if (!post) {
+    if (post.length === 0) {
       throw new NotFoundException('Post not exist');
     }
     return post;
@@ -23,7 +23,7 @@ export class PostService {
       return filename;
     }, []);
     const post = await this.postReponsitory.store(id, data, nameFiles);
-    if (!post) {
+    if (post.length === 0) {
       throw new BadRequestException(`Can't create post`);
     }
     return post;
@@ -46,7 +46,7 @@ export class PostService {
 
   async getAllInfo(id: number) {
     const post = await this.postReponsitory.findAllDataPostById(id);
-    if (!post) {
+    if (post.length === 0) {
       throw new BadRequestException('Post not exist');
     }
     return post;

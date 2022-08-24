@@ -7,7 +7,7 @@ export class PostRepository {
   constructor(
     @InjectRepository(Posts)
     private postRepository: Repository<Posts>,
-  ) {}
+  ) { }
 
   findById(id: number) {
     return this.postRepository.findOne({ where: { id } });
