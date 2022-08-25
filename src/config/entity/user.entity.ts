@@ -5,7 +5,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Role } from '../../api/commons/role/enum/role.enum';
+import { Role } from '../../commons/role/enum/role.enum';
 import { Posts } from './post.entity';
 
 @Entity()

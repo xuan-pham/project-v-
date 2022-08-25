@@ -2,6 +2,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Posts } from '../../config/entity/post.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { EntityId } from 'typeorm/repository/EntityId';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 
 export class PostRepository {
   constructor(
@@ -13,7 +14,7 @@ export class PostRepository {
     return this.postRepository.findOne({ where: { id } });
   }
 
-  findAllDataPostById(id: number) {
+  getDataPost(id: number) {
     return this.postRepository.find({
       relations: {
         author: true,
@@ -22,8 +23,12 @@ export class PostRepository {
     });
   }
 
-  index() {
-    return this.postRepository.find();
+  index(filter: string, option: IPaginationOptions): Promise<Pagination<Posts>> {
+    const queryBuilder = this.postRepository.createQueryBuilder('post');
+    queryBuilder.where('post.title LIKE :filter', { filter: `%${filter}%`, })
+    queryBuilder.orderBy('post.title', 'DESC')
+      .getMany();
+    return paginate<Posts>(queryBuilder, option);
   }
 
   store(id, data, nameFiles) {

@@ -8,7 +8,7 @@ import { PostModule } from './api/post/post.module';
 import { CommentModule } from './api/comment/comment.module';
 import { AuthModule } from './api/Authentication/auth.module';
 import { MailModule } from './api/mail/mail.module';
-import { ApiTokenCheckMiddleware } from './api/commons/middleware/api-token-check.middleware';
+import { ApiTokenCheckMiddleware } from './commons/middleware/api-token-check.middleware';
 import { GoogleOauthModule } from './api/google-oauth/google-oauth.module';
 import { MessageModule } from './api/message/message.module';
 import { SearchModule } from './api/search/search.module';
@@ -31,4 +31,4 @@ import { SearchModule } from './api/search/search.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

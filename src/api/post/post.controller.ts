@@ -10,18 +10,22 @@ import {
   UseGuards,
   UseInterceptors,
   Request,
+  Query,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { storagePost } from '../commons/image/imagePost.image';
+import { storagePost } from '../../commons/image/imagePost.image';
 import { JwtAuthenticationGuard } from '../Authentication/guard/jwt-auth.guard';
 import { UpdatePostDto } from './dto/updatePost.dto';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Posts } from '../../config/entity/post.entity';
 import { DeleteResult } from 'typeorm';
-import { RoleGuard } from '../commons/role/guard/role.guard';
-import { Role } from '../commons/role/enum/role.enum';
+import { RoleGuard } from '../../commons/role/guard/role.guard';
+import { Role } from '../../commons/role/enum/role.enum';
 @ApiBearerAuth()
+@ApiTags('post')
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) { }
@@ -29,8 +33,15 @@ export class PostController {
   @Get()
   @UseGuards(RoleGuard(Role.Admin))
   @UseGuards(JwtAuthenticationGuard)
-  index(): Promise<Posts[]> {
-    return this.postService.index();
+  index(
+    @Query('filter') filter: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+  ) {
+    limit = limit > 100 ? 100 : limit;
+    return this.postService.index(filter, {
+      page, limit
+    })
   }
 
   @Get('/:id')

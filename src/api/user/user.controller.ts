@@ -9,19 +9,24 @@ import {
   UseGuards,
   UseInterceptors,
   Request,
+  Query,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { Users } from '../../config/entity/user.entity';
 import { DeleteResult } from 'typeorm';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/user.dto';
-import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { JwtAuthenticationGuard } from '../Authentication/guard/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { storage } from '../commons/image/imageProfile.image';
-import { RoleGuard } from '../commons/role/guard/role.guard';
-import { Role } from '../commons/role/enum/role.enum';
+import { storage } from '../../commons/image/imageProfile.image';
+import { RoleGuard } from '../../commons/role/guard/role.guard';
+import { Role } from '../../commons/role/enum/role.enum';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 @ApiBearerAuth()
+@ApiTags('user')
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) { }
@@ -29,8 +34,15 @@ export class UserController {
   @Get()
   @UseGuards(RoleGuard(Role.Admin))
   @UseGuards(JwtAuthenticationGuard)
-  index(): Promise<Users[]> {
-    return this.userService.index();
+  index(
+    @Query('filter') filter: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+  ): Promise<Pagination<Users>> {
+    limit = limit > 100 ? 100 : limit;
+    return this.userService.index(filter, {
+      page, limit
+    })
   }
 
   @UseGuards(JwtAuthenticationGuard)
@@ -52,8 +64,7 @@ export class UserController {
     schema: {
       type: 'object',
       properties: {
-        comment: { type: 'string' },
-        outletId: { type: 'integer' },
+        phone: { type: 'string' },
         files: {
           type: 'string',
           format: 'binary',

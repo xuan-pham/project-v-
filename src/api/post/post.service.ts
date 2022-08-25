@@ -4,18 +4,18 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PostRepository } from './post.repository';
-import { Posts } from '../../config/entity/post.entity';
+import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class PostService {
   constructor(private readonly postReponsitory: PostRepository) { }
 
-  async index(): Promise<Posts[]> {
-    const post = await this.postReponsitory.index();
-    if (post.length === 0) {
+  async index(filter: string, options: IPaginationOptions) {
+    const queryBuilder = await this.postReponsitory.index(filter, options);
+    if (!queryBuilder) {
       throw new NotFoundException('Post not exist');
     }
-    return post;
+    return queryBuilder;
   }
 
   async store(id: number, data, images) {
@@ -45,7 +45,7 @@ export class PostService {
   }
 
   async getAllInfo(id: number) {
-    const post = await this.postReponsitory.findAllDataPostById(id);
+    const post = await this.postReponsitory.getDataPost(id);
     if (post.length === 0) {
       throw new BadRequestException('Post not exist');
     }

@@ -1,14 +1,14 @@
 import { InjectRepository } from '@nestjs/typeorm';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { Repository, DeleteResult } from 'typeorm';
-import { EntityId } from 'typeorm/repository/EntityId';
 import { Users } from '../../config/entity/user.entity';
 
 export class UserRepository {
   constructor(
     @InjectRepository(Users)
     private userRepository: Repository<Users>,
-  ) {}
-  findAllInfoUserById(id: number) {
+  ) { }
+  getDataUser(id: number) {
     return this.userRepository.find({
       relations: {
         posts: true,
@@ -25,8 +25,13 @@ export class UserRepository {
     return this.userRepository.findOne({ where: { email } });
   }
 
-  index() {
-    return this.userRepository.find();
+  index(filter: string, option: IPaginationOptions): Promise<Pagination<Users>> {
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
+    queryBuilder.where('user.name LIKE :filter', { filter: `%${filter}%`, })
+      .orWhere('user.email LIKE :filter', { filter: `%${filter}%`, })
+    queryBuilder.orderBy('user.name', 'DESC')
+      .getMany();
+    return paginate<Users>(queryBuilder, option);
   }
 
   store(data: any) {
@@ -45,7 +50,10 @@ export class UserRepository {
     return this.userRepository.delete(id);
   }
 
-  confirm(id: number) {
+  confirmEmail(id: number) {
     return this.userRepository.update(id, { isStatus: true });
+  }
+  confirmPass(id: number, pass: string) {
+    return this.userRepository.update(id, { password: pass });
   }
 }

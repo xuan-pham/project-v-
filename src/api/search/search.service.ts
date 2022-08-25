@@ -5,14 +5,13 @@ import { UserService } from '../user/user.service';
 @Injectable()
 export class SearchService {
   constructor(
-    private readonly userService: UserService,
     private readonly postService: PostService,
-  ) {}
+  ) { }
 
-  async findAll(request) {
+  async findAll(data) {
     const builderPost = await this.postService.getDataQuery('post');
-    if (request.query.s) {
-      builderPost.where('post.title LIKE :s', { s: `%${request.query.s}%` });
+    if (data) {
+      builderPost.where('post.title LIKE :s', { s: `%${data}%` });
     }
     const post = await builderPost.getMany();
     if (post.length === 0) {

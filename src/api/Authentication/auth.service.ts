@@ -1,6 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { CreateAccount, LoginDto } from './dto/authentication.dto';
+import { ChangePassDto, CreateAccount, ForgotPassDto, LoginDto } from './dto/authentication.dto';
 import { UserRepository } from '../user/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -107,6 +107,30 @@ export class AuthService {
 
   private async markEmailAsConfirmed(email: string) {
     const user = await this.userRepository.findByEmail(email);
-    return this.userRepository.confirm(user.id);
+    return this.userRepository.confirmEmail(user.id);
+  }
+
+  async forgotPass(data: ForgotPassDto) {
+    const { email } = data;
+    const check = await this.userRepository.findByEmail(email);
+    if (!check) {
+      throw new NotFoundException(`Email is not correct`);
+    }
+    return email;
+  }
+
+  async changePass(email: string, data: ChangePassDto) {
+    const pass = data.password;
+    const passConfirm = data.passwordConfirm;
+    if (pass !== passConfirm) {
+      throw new BadRequestException('password is not matched');
+    }
+    const hash = await this.hashPassword(pass);
+    return this.markPasslAsConfirmed(email, hash)
+
+  }
+  private async markPasslAsConfirmed(email: string, pass: string) {
+    const user = await this.userRepository.findByEmail(email);
+    return this.userRepository.confirmPass(user.id, pass);
   }
 }

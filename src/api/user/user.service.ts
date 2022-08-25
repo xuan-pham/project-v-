@@ -6,21 +6,27 @@ import {
 import { Users } from '../../config/entity/user.entity';
 import { UserRepository } from './user.repository';
 import { UpdateUserDto } from './dto/user.dto';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
+
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userReponsitory: UserRepository) {}
+  paginate(arg0: {}): Promise<Pagination<Users, import("nestjs-typeorm-paginate").IPaginationMeta>> {
+    throw new Error('Method not implemented.');
+  }
+  constructor(private readonly userReponsitory: UserRepository) { }
 
   async findByEmail(email: string): Promise<Users> {
     return this.userReponsitory.findByEmail(email);
   }
 
-  async index(): Promise<Users[]> {
-    const user = await this.userReponsitory.index();
-    if (!user) {
+  async index(filter: string, options: IPaginationOptions) {
+    const queryBuilder = await this.userReponsitory.index(filter, options);
+    if (!queryBuilder) {
       throw new NotFoundException('User not exist');
     }
-    return user;
+    return queryBuilder;
+
   }
   //
   // async store(data) {
@@ -31,7 +37,7 @@ export class UserService {
   //   return user;
   // }
   async getAllInfo(id: number) {
-    const user = await this.userReponsitory.findAllInfoUserById(id);
+    const user = await this.userReponsitory.getDataUser(id);
     if (!user) {
       throw new BadRequestException('User not exist');
     }

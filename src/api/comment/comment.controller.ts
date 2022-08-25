@@ -8,12 +8,13 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthenticationGuard } from '../Authentication/guard/jwt-auth.guard';
 import { CommentService } from './comment.service';
-
+@ApiTags('comment')
 @Controller('comment')
 export class CommentController {
-  constructor(private readonly commentService: CommentService) {}
+  constructor(private readonly commentService: CommentService) { }
 
   @Post('post/:id')
   @UseGuards(JwtAuthenticationGuard)
