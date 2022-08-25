@@ -19,7 +19,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { storagePost } from '../../commons/image/imagePost.image';
 import { JwtAuthenticationGuard } from '../Authentication/guard/jwt-auth.guard';
 import { UpdatePostDto } from './dto/updatePost.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { Posts } from '../../config/entity/post.entity';
 import { DeleteResult } from 'typeorm';
 import { RoleGuard } from '../../commons/role/guard/role.guard';
@@ -51,10 +51,26 @@ export class PostController {
 
   @UseGuards(JwtAuthenticationGuard)
   @Post('create')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        title: { type: 'string' },
+        images: {
+          type: 'array', // 👈  array of files
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+      },
+    },
+  })
   @UseInterceptors(FilesInterceptor('images', 12, storagePost))
   create(
     @Request() req,
-    @Body() data,
+    @Body() data: string,
     @UploadedFiles() images: Array<Express.Multer.File>,
   ): Promise<Posts> {
     const id = req.user.id;
