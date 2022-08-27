@@ -77,7 +77,7 @@ export class UserController {
     @Request() req,
     @Body() data: UpdateUserDto,
     @UploadedFile() files: Express.Multer.File,
-  ): Promise<Users> {
+  ) {
     const id = req.user.id;
     return this.userService.update(+id, data, files);
   }

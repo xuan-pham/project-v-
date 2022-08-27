@@ -40,18 +40,20 @@ export class PostRepository {
   }
 
   async update(id: number, data, nameFiles) {
-    await this.postRepository.update(id, {
+    return this.postRepository.update(id, {
       ...data,
       image: nameFiles,
     });
-    return this.findById(id);
   }
 
   delete(id: EntityId): Promise<DeleteResult> {
     return this.postRepository.delete(id);
   }
 
-  queryBuilder(alias: string) {
-    return this.postRepository.createQueryBuilder(alias);
+  queryBuilder(data) {
+    const builderPost = this.postRepository.createQueryBuilder('post');
+    builderPost.where('post.title LIKE :s', { s: `%${data}%` })
+    builderPost.orderBy('post.title', 'DESC')
+    return builderPost.getMany();
   }
 }
