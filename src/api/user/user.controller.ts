@@ -34,13 +34,13 @@ export class UserController {
   @Get()
   @UseGuards(RoleGuard(Role.Admin))
   @UseGuards(JwtAuthenticationGuard)
-  index(
-    @Query('filter') filter: string,
+  getDataUser(
+    @Query('filter') filter: string | '',
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
   ): Promise<Pagination<Users>> {
     limit = limit > 100 ? 100 : limit;
-    return this.userService.index(filter, {
+    return this.userService.getUsers(filter, {
       page, limit
     })
   }
