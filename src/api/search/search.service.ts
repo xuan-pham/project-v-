@@ -6,17 +6,14 @@ import { UserService } from '../user/user.service';
 export class SearchService {
   constructor(
     private readonly postService: PostService,
+    private readonly userService: UserService,
   ) { }
 
   async findAll(data) {
-    const builderPost = await this.postService.getDataQuery('post');
-    if (data) {
-      builderPost.where('post.title LIKE :s', { s: `%${data}%` });
-    }
-    const post = await builderPost.getMany();
-    if (post.length === 0) {
-      throw new BadRequestException('data not exist');
-    }
-    return { post };
+    const [posts, users] = await Promise.all([
+      this.postService.getDataQuery(data),
+      this.userService.getDataQuery(data)
+    ]);
+    return { posts, users };
   }
 }

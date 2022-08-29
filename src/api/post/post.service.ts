@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  HttpCode,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -33,11 +35,11 @@ export class PostService {
     const nameFiles = files.map(({ filename }) => {
       return filename;
     });
-    const post = await this.postReponsitory.update(id, data, nameFiles);
-    if (!post) {
-      throw new BadRequestException(`Can't update post`);
+    await this.postReponsitory.update(id, data, nameFiles);
+    return {
+      status: HttpStatus.OK,
+      message: 'successful update'
     }
-    return post;
   }
 
   async delete(id: number) {
@@ -60,7 +62,7 @@ export class PostService {
     return post;
   }
 
-  async getDataQuery(alias: string) {
-    return this.postReponsitory.queryBuilder(alias);
+  async getDataQuery(data) {
+    return this.postReponsitory.queryBuilder(data);
   }
 }

@@ -84,7 +84,7 @@ export class PostController {
     @Param('id') id: string,
     @Body() data: UpdatePostDto,
     @UploadedFiles() files: Array<Express.Multer.File>,
-  ): Promise<Posts> {
+  ) {
     return this.postService.update(+id, data, files);
   }
 

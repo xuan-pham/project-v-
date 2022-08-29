@@ -1,3 +1,4 @@
+
 import { INestApplication } from "@nestjs/common"
 import { Test, TestingModule } from "@nestjs/testing";
 import { UserController } from "./user.controller";
@@ -32,7 +33,6 @@ describe('UserController', () => {
                 password: '123456'
             });
         });
-
         test('then it should return access token', () => {
             const data = user._body.Authentication;
             token = data;

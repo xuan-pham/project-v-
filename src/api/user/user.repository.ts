@@ -2,12 +2,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { Repository, DeleteResult } from 'typeorm';
 import { Users } from '../../config/entity/user.entity';
+import { UpdateUserDto } from './dto/user.dto';
 
 export class UserRepository {
   constructor(
     @InjectRepository(Users)
     private userRepository: Repository<Users>,
   ) { }
+
   getDataUser(id: number) {
     return this.userRepository.find({
       relations: {
@@ -38,12 +40,11 @@ export class UserRepository {
     return this.userRepository.save(data);
   }
 
-  async update(id: number, data: any, files) {
-    await this.userRepository.update(id, {
+  async update(id: number, data, files: Express.Multer.File) {
+    return this.userRepository.update(id, {
       ...data,
       avatar: files.filename,
     });
-    return this.findById(id);
   }
 
   delete(id: number): Promise<DeleteResult> {
@@ -55,5 +56,12 @@ export class UserRepository {
   }
   confirmPass(id: number, pass: string) {
     return this.userRepository.update(id, { password: pass });
+  }
+
+  queryBuilder(data) {
+    const builderUser = this.userRepository.createQueryBuilder('user');
+    builderUser.where('user.name LIKE :s', { s: `%${data}%` })
+    builderUser.orderBy('user.name', 'DESC')
+    return builderUser.getMany();
   }
 }

@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  HttpCode,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -53,12 +55,12 @@ export class UserService {
     return user;
   }
 
-  async update(id: number, data, files) {
-    const user = await this.userReponsitory.update(+id, data, files);
-    if (!user) {
-      throw new BadRequestException(`Can't update user`);
+  async update(id: number, data: UpdateUserDto, files: Express.Multer.File) {
+    await this.userReponsitory.update(+id, data, files);
+    return {
+      status: HttpStatus.OK,
+      message: 'successful update',
     }
-    return user;
   }
 
   async delete(id: number) {
@@ -77,5 +79,9 @@ export class UserService {
     } catch (error) {
       throw new BadRequestException(error.message);
     }
+  }
+
+  async getDataQuery(data) {
+    return this.userReponsitory.queryBuilder(data);
   }
 }
