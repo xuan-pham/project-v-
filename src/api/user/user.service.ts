@@ -20,7 +20,7 @@ export class UserService {
     return this.userReponsitory.findByEmail(email);
   }
 
-  async index(filter: string, options: IPaginationOptions) {
+  async getUsers(filter: string, options: IPaginationOptions) {
     const queryBuilder = await this.userReponsitory.index(filter, options);
     if (!queryBuilder) {
       throw new NotFoundException('User not exist');
