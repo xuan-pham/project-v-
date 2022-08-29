@@ -31,7 +31,7 @@ export class UserRepository {
     const queryBuilder = this.userRepository.createQueryBuilder('user');
     queryBuilder.where('user.name LIKE :filter', { filter: `%${filter}%`, })
       .orWhere('user.email LIKE :filter', { filter: `%${filter}%`, })
-    queryBuilder.orderBy('user.name', 'DESC')
+    queryBuilder.orderBy('user.name')
       .getMany();
     return paginate<Users>(queryBuilder, option);
   }
@@ -61,7 +61,7 @@ export class UserRepository {
   queryBuilder(data) {
     const builderUser = this.userRepository.createQueryBuilder('user');
     builderUser.where('user.name LIKE :s', { s: `%${data}%` })
-    builderUser.orderBy('user.name', 'DESC')
+    builderUser.orderBy('user.name')
     return builderUser.getMany();
   }
 }

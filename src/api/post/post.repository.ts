@@ -26,7 +26,7 @@ export class PostRepository {
   index(filter: string, option: IPaginationOptions): Promise<Pagination<Posts>> {
     const queryBuilder = this.postRepository.createQueryBuilder('post');
     queryBuilder.where('post.title LIKE :filter', { filter: `%${filter}%`, })
-    queryBuilder.orderBy('post.title', 'DESC')
+    queryBuilder.orderBy('post.title',)
       .getMany();
     return paginate<Posts>(queryBuilder, option);
   }
@@ -53,7 +53,7 @@ export class PostRepository {
   queryBuilder(data) {
     const builderPost = this.postRepository.createQueryBuilder('post');
     builderPost.where('post.title LIKE :s', { s: `%${data}%` })
-    builderPost.orderBy('post.title', 'DESC')
+    builderPost.orderBy('post.title', 'ASC')
     return builderPost.getMany();
   }
 }

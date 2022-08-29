@@ -8,9 +8,11 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthenticationGuard } from '../Authentication/guard/jwt-auth.guard';
 import { CommentService } from './comment.service';
+import { CommentDto } from './dto/comment.dto';
+@ApiBearerAuth()
 @ApiTags('comment')
 @Controller('comment')
 export class CommentController {
@@ -18,7 +20,7 @@ export class CommentController {
 
   @Post('post/:id')
   @UseGuards(JwtAuthenticationGuard)
-  createComment(@Param('id') id: string, @Request() req, @Body() data) {
+  createComment(@Param('id') id: string, @Request() req, @Body() data: CommentDto) {
     return this.commentService.create(+id, req, data);
   }
 

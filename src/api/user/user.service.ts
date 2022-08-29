@@ -71,6 +71,7 @@ export class UserService {
     try {
       const newUser = {
         email: data.email,
+        name: data.name,
         avatar: data.avatar,
         isStatus: true,
         isRegisteredWithGoogle: true,

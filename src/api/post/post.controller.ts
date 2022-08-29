@@ -78,6 +78,22 @@ export class PostController {
   }
 
   @UseGuards(JwtAuthenticationGuard)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        title: { type: 'string' },
+        files: {
+          type: 'array', // 👈  array of files
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+      },
+    },
+  })
   @Put('update/:id')
   @UseInterceptors(FilesInterceptor('files', 12, storagePost))
   update(

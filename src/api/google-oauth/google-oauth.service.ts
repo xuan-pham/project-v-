@@ -7,7 +7,7 @@ export class GoogleOauthService {
   constructor(
     private readonly userService: UserService,
     private readonly authService: AuthService,
-  ) {}
+  ) { }
 
   async googleLogin(request) {
     return this.createAccountGoogle(request.user);
@@ -24,7 +24,7 @@ export class GoogleOauthService {
     }
 
     try {
-      const newUser = await this.userService.createWithGoogle(data.user);
+      const newUser = await this.userService.createWithGoogle(data);
       return this.authService.logIn(newUser);
     } catch (error) {
       throw new BadRequestException(error.message);
