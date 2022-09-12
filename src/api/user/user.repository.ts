@@ -80,7 +80,7 @@ export class UserRepository {
   }
 
   changeRoleUser(id: number, data: ChangeRole) {
-    console.log('HAHAHA11');
+    console.log('HAHAHA');
     return this.userRepository
       .createQueryBuilder()
       .update()
