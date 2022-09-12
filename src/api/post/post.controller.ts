@@ -28,20 +28,21 @@ import { Role } from '../../commons/role/enum/role.enum';
 @ApiTags('post')
 @Controller('post')
 export class PostController {
-  constructor(private readonly postService: PostService) { }
+  constructor(private readonly postService: PostService) {}
 
   @Get()
   @UseGuards(RoleGuard(Role.Admin))
   @UseGuards(JwtAuthenticationGuard)
   index(
     @Query('filter') filter: string,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
   ) {
     limit = limit > 100 ? 100 : limit;
     return this.postService.index(filter, {
-      page, limit
-    })
+      page,
+      limit,
+    });
   }
 
   @Get('/:id')

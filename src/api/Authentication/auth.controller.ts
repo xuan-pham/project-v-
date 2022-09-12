@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
+  Param,
   Post,
   Query,
   Request,
@@ -9,10 +11,17 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guard/local-auth.guard';
-import { ChangePassDto, CreateAccount, ForgotPassDto, LoginDto } from './dto/authentication.dto';
+import {
+  ChangePassDto,
+  ChangeRole,
+  CreateAccount,
+  ForgotPassDto,
+  LoginDto,
+} from './dto/authentication.dto';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
-import { JwtAuthenticationGuard } from './guard/jwt-auth.guard';
 import { MailService } from '../mail/mail.service';
+import { RoleGuard } from 'src/commons/role/guard/role.guard';
+import { Role } from 'src/commons/role/enum/role.enum';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -20,7 +29,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly mailService: MailService,
-  ) { }
+  ) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
@@ -31,14 +40,8 @@ export class AuthController {
   @Post('signup')
   async signUp(@Body() data: CreateAccount) {
     await this.authService.createAccount(data);
-    // await this.mailService.sendUserConfirmation(data.email);
+    await this.mailService.sendUserConfirmation(data.email);
     return `Please check your email to activate your account`;
-  }
-
-  @UseGuards(JwtAuthenticationGuard)
-  @Post('logout')
-  logOut(@Request() req) {
-    return this.authService.logOut(req);
   }
 
   @Get('confirm')
@@ -60,5 +63,16 @@ export class AuthController {
     const email = await this.authService.decodeConfirmationToken(token);
     await this.authService.changePass(email, data);
     return `Change password successfully`;
+  }
+
+  @Post('change-role/:id')
+  // @UseGuards(RoleGuard(Role.Admin))
+  async changeRole(@Param('id') id: string, @Body() data: ChangeRole) {
+    console.log(id);
+    await this.authService.changeRole(+id, data);
+    return {
+      status: HttpStatus.OK,
+      messages: 'Change role successfully',
+    };
   }
 }

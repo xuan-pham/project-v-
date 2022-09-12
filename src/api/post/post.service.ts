@@ -10,7 +10,7 @@ import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class PostService {
-  constructor(private readonly postReponsitory: PostRepository) { }
+  constructor(private readonly postReponsitory: PostRepository) {}
 
   async index(filter: string, options: IPaginationOptions) {
     const queryBuilder = await this.postReponsitory.index(filter, options);
@@ -38,8 +38,8 @@ export class PostService {
     await this.postReponsitory.update(id, data, nameFiles);
     return {
       status: HttpStatus.OK,
-      message: 'successful update'
-    }
+      message: 'successful update',
+    };
   }
 
   async delete(id: number) {

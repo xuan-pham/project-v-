@@ -1,22 +1,21 @@
 import {
   BadRequestException,
-  HttpCode,
-  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { Users } from '../../config/entity/user.entity';
 import { UserRepository } from './user.repository';
 import { UpdateUserDto } from './dto/user.dto';
-import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
-
+import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class UserService {
-  paginate(arg0: {}): Promise<Pagination<Users, import("nestjs-typeorm-paginate").IPaginationMeta>> {
+  paginate(arg0: {}): Promise<
+    Pagination<Users, import('nestjs-typeorm-paginate').IPaginationMeta>
+  > {
     throw new Error('Method not implemented.');
   }
-  constructor(private readonly userReponsitory: UserRepository) { }
+  constructor(private readonly userReponsitory: UserRepository) {}
 
   async findByEmail(email: string): Promise<Users> {
     return this.userReponsitory.findByEmail(email);
@@ -28,7 +27,6 @@ export class UserService {
       throw new NotFoundException('User not exist');
     }
     return queryBuilder;
-
   }
   //
   // async store(data) {
@@ -43,6 +41,7 @@ export class UserService {
     if (!user) {
       throw new BadRequestException('User not exist');
     }
+
     return user;
   }
 
@@ -56,15 +55,12 @@ export class UserService {
   }
 
   async update(id: number, data: UpdateUserDto, files: Express.Multer.File) {
-    await this.userReponsitory.update(+id, data, files);
-    return {
-      status: HttpStatus.OK,
-      message: 'successful update',
-    }
+    return this.userReponsitory.update(+id, data, files);
   }
 
   async delete(id: number) {
-    return this.userReponsitory.delete(id);
+    const check = await this.userReponsitory.delete(id);
+    return check;
   }
 
   async createWithGoogle(data) {
@@ -84,5 +80,11 @@ export class UserService {
 
   async getDataQuery(data) {
     return this.userReponsitory.queryBuilder(data);
+  }
+
+  async setCurrentRefreshToken(refreshToken: string, userId: number) {
+    await this.userReponsitory.update(userId, {
+      currentHashedRefreshToken: refreshToken,
+    });
   }
 }

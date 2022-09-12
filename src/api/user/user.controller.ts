@@ -12,6 +12,8 @@ import {
   Query,
   DefaultValuePipe,
   ParseIntPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { Users } from '../../config/entity/user.entity';
 import { DeleteResult } from 'typeorm';
@@ -29,20 +31,21 @@ import { Pagination } from 'nestjs-typeorm-paginate';
 @ApiTags('user')
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService) {}
 
   @Get()
   @UseGuards(RoleGuard(Role.Admin))
   @UseGuards(JwtAuthenticationGuard)
   getDataUser(
-    @Query('filter') filter: string | '',
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+    @Query('filter') filter: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
   ): Promise<Pagination<Users>> {
     limit = limit > 100 ? 100 : limit;
     return this.userService.getUsers(filter, {
-      page, limit
-    })
+      page,
+      limit,
+    });
   }
 
   @UseGuards(JwtAuthenticationGuard)
@@ -73,18 +76,26 @@ export class UserController {
     },
   })
   @UseInterceptors(FileInterceptor('files', storage))
-  update(
+  async update(
     @Request() req,
     @Body() data: UpdateUserDto,
     @UploadedFile() files: Express.Multer.File,
   ) {
     const id = req.user.id;
-    return this.userService.update(+id, data, files);
+    await this.userService.update(+id, data, files);
+    return {
+      status: HttpStatus.OK,
+      message: 'successful update',
+    };
   }
 
   @UseGuards(JwtAuthenticationGuard)
   @Delete('delete/:id')
-  destroy(@Param('id') id: number): Promise<DeleteResult> {
-    return this.userService.delete(+id);
+  async destroy(@Param('id') id: number) {
+    await this.userService.delete(+id);
+    return {
+      status: HttpStatus.OK,
+      message: 'Successful Delete',
+    };
   }
 }

@@ -1,5 +1,6 @@
-import { IsEmail, IsNotEmpty, IsString, } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from 'src/commons/role/enum/role.enum';
 
 export class CreateAccount {
   @ApiProperty({
@@ -63,4 +64,12 @@ export class ChangePassDto {
   @IsString()
   @IsNotEmpty()
   passwordConfirm: string;
+}
+
+export class ChangeRole {
+  @ApiProperty({
+    example: Role.Admin,
+  })
+  @IsEnum(Role)
+  role: Role;
 }

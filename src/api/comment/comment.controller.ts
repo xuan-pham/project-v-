@@ -16,11 +16,15 @@ import { CommentDto } from './dto/comment.dto';
 @ApiTags('comment')
 @Controller('comment')
 export class CommentController {
-  constructor(private readonly commentService: CommentService) { }
+  constructor(private readonly commentService: CommentService) {}
 
   @Post('post/:id')
   @UseGuards(JwtAuthenticationGuard)
-  createComment(@Param('id') id: string, @Request() req, @Body() data: CommentDto) {
+  createComment(
+    @Param('id') id: string,
+    @Request() req: Request,
+    @Body() data: CommentDto,
+  ) {
     return this.commentService.create(+id, req, data);
   }
 
@@ -30,7 +34,7 @@ export class CommentController {
     return this.commentService.showByPost(+id);
   }
 
-  //   @Query('page') page: number;
+  //@Query('page') page: number;
   @Get('user/:id')
   showCommentsByUser(@Param('id') id: string) {
     return this.commentService.showByUser(+id);
@@ -43,7 +47,7 @@ export class CommentController {
 
   @Delete(':id')
   @UseGuards(JwtAuthenticationGuard)
-  delete(@Param('id') id: string, @Request() req) {
+  delete(@Param('id') id: string, @Request() req: Request) {
     return this.commentService.delete(+id, req);
   }
 }

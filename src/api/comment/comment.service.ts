@@ -6,6 +6,7 @@ import {
 import { PostService } from '../post/post.service';
 import { UserService } from '../user/user.service';
 import { CommentRepository } from './comment.repository';
+import { CommentDto } from './dto/comment.dto';
 
 @Injectable()
 export class CommentService {
@@ -19,7 +20,7 @@ export class CommentService {
     return obj && obj !== 'null' && obj !== 'undefined';
   };
 
-  async create(id: number, request, data) {
+  async create(id: number, request, data: CommentDto) {
     try {
       const userId = request.user.id;
       const post = await this.postService.getPostById(id);

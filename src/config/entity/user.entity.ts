@@ -20,7 +20,7 @@ export class Users extends BaseEntity {
   name: string;
 
   @Column({ nullable: true })
-  phone: number;
+  phone: string;
 
   @Column({ nullable: true })
   password: string;
@@ -43,4 +43,7 @@ export class Users extends BaseEntity {
 
   @OneToMany(() => Posts, (post: Posts) => post.author)
   posts?: Posts[];
+
+  @Column({ nullable: true })
+  currentHashedRefreshToken?: string;
 }

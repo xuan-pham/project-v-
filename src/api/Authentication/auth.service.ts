@@ -1,6 +1,16 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { ChangePassDto, CreateAccount, ForgotPassDto, LoginDto } from './dto/authentication.dto';
+import {
+  ChangePassDto,
+  ChangeRole,
+  CreateAccount,
+  ForgotPassDto,
+  LoginDto,
+} from './dto/authentication.dto';
 import { UserRepository } from '../user/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -11,12 +21,14 @@ export class AuthService {
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   async logIn(request: LoginDto) {
     const { email } = request;
     const checkActive = await this.checkEmailActive(email);
-    return this.getCookieWithJwtAccessToken(checkActive);
+    const accessToken = await this.getCookieWithJwtAccessToken(checkActive);
+    const refreshToken = await this.getCookieWithJwtRefreshToken(checkActive);
+    await this.userRepository;
   }
 
   async createAccount(data: CreateAccount) {
@@ -25,16 +37,10 @@ export class AuthService {
       throw new BadRequestException('Email exist');
     }
     const hashPass = await this.hashPassword(data.password);
-    const createAccount = await this.userRepository.store({
+    return this.userRepository.store({
       ...data,
       password: hashPass,
     });
-    createAccount.password = undefined;
-    return createAccount;
-  }
-
-  logOut(res) {
-    res.res.setHeader('Set-Cookie', this.getCookieForLogOut());
   }
 
   private getCookieForLogOut() {
@@ -60,13 +66,27 @@ export class AuthService {
   }
 
   async getCookieWithJwtAccessToken(data) {
-    const { id, email } = data;
-    const payload = { id, email };
+    const { id, email, name } = data;
+    const payload = { id, email, name };
     const token = this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_SECRET'),
       expiresIn: this.configService.get('JWT_EXPIRATION_TIME'),
     });
     return { Authentication: token };
+  }
+
+  public getCookieWithJwtRefreshToken(data) {
+    const { id, email, name } = data;
+    const payload = { id, email, name };
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
+    });
+    const cookie = `Refresh=${token}`;
+    return {
+      cookie,
+      token,
+    };
   }
 
   async checkEmailActive(email: string) {
@@ -126,11 +146,14 @@ export class AuthService {
       throw new BadRequestException('password is not matched');
     }
     const hash = await this.hashPassword(pass);
-    return this.markPasslAsConfirmed(email, hash)
-
+    return this.markPasslAsConfirmed(email, hash);
   }
   private async markPasslAsConfirmed(email: string, pass: string) {
     const user = await this.userRepository.findByEmail(email);
     return this.userRepository.confirmPass(user.id, pass);
+  }
+
+  changeRole(id: number, data: ChangeRole) {
+    return this.userRepository.changeRoleUser(id, data);
   }
 }
