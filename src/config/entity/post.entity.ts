@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Users } from './user.entity';
 import { Comments } from './comment.entity';
+import { Shares } from './share.entity';
 
 @Entity()
 export class Posts {
@@ -21,6 +22,9 @@ export class Posts {
 
   @Column('text', { array: true, nullable: true })
   image: string[];
+
+  @Column('text', { array: true, nullable: true })
+  videos: string[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createAt: Date;
@@ -34,4 +38,10 @@ export class Posts {
 
   @OneToMany(() => Comments, (comment) => comment.post)
   comments: Comment[];
+
+  @OneToMany(() => Shares, (shares) => shares.post)
+  shares: Shares[];
+
+  @Column({ default: false })
+  isBlocked: boolean;
 }

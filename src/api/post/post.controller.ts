@@ -13,15 +13,16 @@ import {
   Query,
   DefaultValuePipe,
   ParseIntPipe,
+  HttpStatus,
 } from '@nestjs/common';
 import { PostService } from './post.service';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { storagePost } from '../../commons/image/imagePost.image';
 import { JwtAuthenticationGuard } from '../Authentication/guard/jwt-auth.guard';
 import { UpdatePostDto } from './dto/updatePost.dto';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { Posts } from '../../config/entity/post.entity';
-import { DeleteResult } from 'typeorm';
+
 import { RoleGuard } from '../../commons/role/guard/role.guard';
 import { Role } from '../../commons/role/enum/role.enum';
 @ApiBearerAuth()
@@ -68,14 +69,24 @@ export class PostController {
       },
     },
   })
-  @UseInterceptors(FilesInterceptor('images', 12, storagePost))
-  create(
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [{ name: 'images' }, { name: 'videos' }],
+      storagePost,
+    ),
+  )
+  async create(
     @Request() req,
     @Body() data: string,
-    @UploadedFiles() images: Array<Express.Multer.File>,
-  ): Promise<Posts> {
+    @UploadedFiles()
+    files?: { images: Express.Multer.File[]; videos: Express.Multer.File[] },
+  ) {
     const id = req.user.id;
-    return this.postService.store(+id, data, images);
+    await this.postService.store(+id, data, files);
+    return {
+      status: HttpStatus.OK,
+      message: `Successfully created`,
+    };
   }
 
   @UseGuards(JwtAuthenticationGuard)
@@ -96,17 +107,51 @@ export class PostController {
     },
   })
   @Put('update/:id')
-  @UseInterceptors(FilesInterceptor('files', 12, storagePost))
-  update(
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [{ name: 'images' }, { name: 'videos' }],
+      storagePost,
+    ),
+  )
+  async update(
     @Param('id') id: string,
     @Body() data: UpdatePostDto,
-    @UploadedFiles() files: Array<Express.Multer.File>,
+    @UploadedFiles()
+    files?: { images: Express.Multer.File[]; videos: Express.Multer.File[] },
   ) {
-    return this.postService.update(+id, data, files);
+    await this.postService.update(+id, data, files);
+    return {
+      status: HttpStatus.OK,
+      message: `Successfully updated`,
+    };
   }
 
   @Delete('delete/:id')
-  delete(@Param('id') id: string): Promise<DeleteResult> {
-    return this.postService.delete(+id);
+  delete(@Param('id') id: string) {
+    this.postService.delete(+id);
+    return {
+      status: HttpStatus.OK,
+      message: `Successfully deleted`,
+    };
+  }
+
+  @UseGuards(RoleGuard(Role.Admin))
+  @Post('blocked')
+  async blockPost(@Query('id') id: string) {
+    await this.postService.blocked(+id);
+    return {
+      status: HttpStatus.OK,
+      message: 'successful',
+    };
+  }
+
+  @UseGuards(RoleGuard(Role.Admin))
+  @Post('unblocked')
+  async unblockPost(@Query('id') id: string) {
+    await this.postService.unblocked(+id);
+    return {
+      status: HttpStatus.OK,
+      message: 'successful',
+    };
   }
 }

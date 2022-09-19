@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { PostRepository } from './post.repository';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
+import { UpdatePostDto } from './dto/updatePost.dto';
 
 @Injectable()
 export class PostService {
@@ -20,22 +21,56 @@ export class PostService {
     return queryBuilder;
   }
 
-  async store(id: number, data, images) {
-    const nameFiles = images.map(({ filename }) => {
+  async store(
+    id: number,
+    data: string,
+    files?: { images: Express.Multer.File[]; videos: Express.Multer.File[] },
+  ) {
+    const nameFilesImages = await files.images.map(({ filename }) => {
       return filename;
     }, []);
-    const post = await this.postReponsitory.store(id, data, nameFiles);
+    if (nameFilesImages.length > 12)
+      throw new BadRequestException(
+        'Exceed the allowable quantity, less than 12',
+      );
+    const nameFilesVideos = await files.videos.map(({ filename }) => {
+      return filename;
+    }, []);
+    if (nameFilesVideos.length > 5)
+      throw new BadRequestException(
+        'exceed the allowable quantity, less than 5',
+      );
+
+    const post = await this.postReponsitory.store(
+      id,
+      data,
+      nameFilesImages,
+      nameFilesVideos,
+    );
     if (post.length === 0) {
       throw new BadRequestException(`Can't create post`);
     }
     return post;
   }
 
-  async update(id: number, data, files) {
-    const nameFiles = files.map(({ filename }) => {
+  async update(
+    id: number,
+    data: UpdatePostDto,
+    files?: { images: Express.Multer.File[]; videos: Express.Multer.File[] },
+  ) {
+    const nameFilesImages = await files.images.map(({ filename }) => {
       return filename;
-    });
-    await this.postReponsitory.update(id, data, nameFiles);
+    }, []);
+
+    const nameFilesVideos = await files.videos.map(({ filename }) => {
+      return filename;
+    }, []);
+    await this.postReponsitory.update(
+      id,
+      data,
+      nameFilesImages,
+      nameFilesVideos,
+    );
     return {
       status: HttpStatus.OK,
       message: 'successful update',
@@ -64,5 +99,18 @@ export class PostService {
 
   async getDataQuery(data) {
     return this.postReponsitory.queryBuilder(data);
+  }
+
+  async blocked(id: number) {
+    const post = await this.postReponsitory.findById(id);
+    if (post.isBlocked === true) throw new BadRequestException('locked');
+    return this.postReponsitory.blocked(id);
+  }
+
+  async unblocked(id: number) {
+    const post = await this.postReponsitory.findById(id);
+    console.log(post);
+    if (post.isBlocked === false) throw new BadRequestException('unblock');
+    return this.postReponsitory.unblocked(id);
   }
 }

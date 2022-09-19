@@ -1,14 +1,24 @@
-import { Injectable } from '@nestjs/common';
-import { Message } from '../../config/entity/message.entity';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import { MessageReponsitory } from './message.reponsitory';
 
 @Injectable()
 export class MessageService {
-  messages: Message[] = [{ name: '', text: '' }];
+  constructor(private messageReponsitory: MessageReponsitory) {}
+
+  isEmptyObject = (v) => {
+    return Object.keys(v).length === 0;
+  };
+  messages: CreateMessageDto[] = [{ name: '', text: '' }];
   clientToUser = {};
-  identify(name: string, clientId: string) {
+  identify(name: string, clientId: string, roomId: number) {
     this.clientToUser[clientId] = name;
+    console.log(roomId);
     return Object.values(this.clientToUser);
   }
 
@@ -18,6 +28,11 @@ export class MessageService {
       text: createMessageDto.text,
     };
     this.messages.push(message);
+    const userId = clientId;
+    const userName = this.clientToUser[clientId];
+    const body = message.text;
+    const roomId = '1';
+    this.messageReponsitory.add(roomId, userId, userName, body);
     return message;
   }
 
@@ -25,8 +40,13 @@ export class MessageService {
     return this.messages;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} message`;
+  async findOne(query) {
+    if (query.idUser || query.idRoom || query.name) {
+      const message = await this.messageReponsitory._find(query);
+      if (message.length === 0) throw new NotFoundException();
+      return message;
+    }
+    throw new BadRequestException();
   }
 
   update(id: number, updateMessageDto: UpdateMessageDto) {

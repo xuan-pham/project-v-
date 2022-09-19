@@ -26,11 +26,20 @@ export class AuthService {
   async logIn(request: LoginDto) {
     const { email } = request;
     const checkActive = await this.checkEmailActive(email);
-    const accessToken = await this.getCookieWithJwtAccessToken(checkActive);
-    const refreshToken = await this.getCookieWithJwtRefreshToken(checkActive);
-    await this.userRepository;
+    const [accessToken, refreshToken] = await Promise.all([
+      this.getCookieWithJwtAccessToken(checkActive),
+      this.getCookieWithJwtRefreshToken(checkActive),
+    ]);
+    const userId = checkActive.id;
+    await this.userRepository.updateRefreshToken(userId, refreshToken);
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
-
+  async logOut(id: number) {
+    return this.userRepository.remoteUpdateRefreshToken(id);
+  }
   async createAccount(data: CreateAccount) {
     const user = await this.userRepository.findByEmail(data.email);
     if (user) {
@@ -68,25 +77,19 @@ export class AuthService {
   async getCookieWithJwtAccessToken(data) {
     const { id, email, name } = data;
     const payload = { id, email, name };
-    const token = this.jwtService.sign(payload, {
+    return this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_SECRET'),
       expiresIn: this.configService.get('JWT_EXPIRATION_TIME'),
     });
-    return { Authentication: token };
   }
 
   public getCookieWithJwtRefreshToken(data) {
     const { id, email, name } = data;
     const payload = { id, email, name };
-    const token = this.jwtService.sign(payload, {
+    return this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
       expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
     });
-    const cookie = `Refresh=${token}`;
-    return {
-      cookie,
-      token,
-    };
   }
 
   async checkEmailActive(email: string) {

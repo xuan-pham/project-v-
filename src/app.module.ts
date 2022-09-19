@@ -12,6 +12,8 @@ import { ApiTokenCheckMiddleware } from './commons/middleware/api-token-check.mi
 import { GoogleOauthModule } from './api/google-oauth/google-oauth.module';
 import { MessageModule } from './api/message/message.module';
 import { SearchModule } from './api/search/search.module';
+import { FriendsModule } from './api/friends/friends-folow.module';
+import { SharesModule } from './api/shares/shares.module';
 
 @Module({
   imports: [
@@ -27,8 +29,10 @@ import { SearchModule } from './api/search/search.module';
     CommentModule,
     MessageModule,
     SearchModule,
+    FriendsModule,
+    SharesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

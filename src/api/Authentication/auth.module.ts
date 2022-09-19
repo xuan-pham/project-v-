@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStratery } from './stratery/jwt.stratery';
 import { MailModule } from '../mail/mail.module';
+import { JwtRefreshTokenStrategy } from './stratery/jwt-refresh.stratery';
 @Module({
   imports: [
     MailModule,
@@ -24,7 +25,13 @@ import { MailModule } from '../mail/mail.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, UserRepository, JwtStratery],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    UserRepository,
+    JwtStratery,
+    JwtRefreshTokenStrategy,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

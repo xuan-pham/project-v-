@@ -37,18 +37,20 @@ export class PostRepository {
     return paginate<Posts>(queryBuilder, option);
   }
 
-  store(id, data, nameFiles) {
+  store(id, data, nameFilesImages, nameFilesVideos) {
     return this.postRepository.save({
       ...data,
       author: id,
-      image: nameFiles,
+      image: nameFilesImages,
+      videos: nameFilesVideos,
     });
   }
 
-  async update(id: number, data, nameFiles) {
+  async update(id: number, data, nameFilesImages, nameFilesVideos) {
     return this.postRepository.update(id, {
       ...data,
-      image: nameFiles,
+      image: nameFilesImages,
+      videos: nameFilesVideos,
     });
   }
 
@@ -61,5 +63,27 @@ export class PostRepository {
     builderPost.where('post.title LIKE :s', { s: `%${data}%` });
     builderPost.orderBy('post.title', 'ASC');
     return builderPost.getMany();
+  }
+
+  blocked(id: number) {
+    return this.postRepository
+      .createQueryBuilder()
+      .update(Posts)
+      .set({
+        isBlocked: true,
+      })
+      .where('id=:id', { id })
+      .execute();
+  }
+
+  unblocked(id: number) {
+    return this.postRepository
+      .createQueryBuilder()
+      .update(Posts)
+      .set({
+        isBlocked: false,
+      })
+      .where('id=:id', { id })
+      .execute();
   }
 }

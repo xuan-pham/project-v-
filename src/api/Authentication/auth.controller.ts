@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Query,
+  Req,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -18,8 +19,11 @@ import {
   ForgotPassDto,
   LoginDto,
 } from './dto/authentication.dto';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { MailService } from '../mail/mail.service';
+import { JwtRefreshGuard } from './guard/jwt-refresh.guard';
+import { JwtAuthenticationGuard } from './guard/jwt-auth.guard';
+import { RequestWithUser } from '../user/user.interface';
 import { RoleGuard } from 'src/commons/role/guard/role.guard';
 import { Role } from 'src/commons/role/enum/role.enum';
 
@@ -44,6 +48,15 @@ export class AuthController {
     return `Please check your email to activate your account`;
   }
 
+  @ApiBearerAuth()
+  @Post('logout')
+  @UseGuards(JwtAuthenticationGuard)
+  async logOut(@Req() request: RequestWithUser) {
+    const id = request.user.id;
+    await this.authService.logOut(+id);
+    return;
+  }
+
   @Get('confirm')
   async confirm(@Query('token') token: string) {
     const email = await this.authService.decodeConfirmationToken(token);
@@ -64,15 +77,23 @@ export class AuthController {
     await this.authService.changePass(email, data);
     return `Change password successfully`;
   }
-
+  @ApiBearerAuth()
   @Post('change-role/:id')
-  // @UseGuards(RoleGuard(Role.Admin))
+  @UseGuards(RoleGuard(Role.Admin))
+  @UseGuards(JwtAuthenticationGuard)
   async changeRole(@Param('id') id: string, @Body() data: ChangeRole) {
-    console.log(id);
     await this.authService.changeRole(+id, data);
     return {
       status: HttpStatus.OK,
       messages: 'Change role successfully',
     };
+  }
+  @ApiBearerAuth()
+  @Get('refresh')
+  @UseGuards(JwtRefreshGuard)
+  async refresh(@Req() req: RequestWithUser) {
+    const accessTokenCookie =
+      await this.authService.getCookieWithJwtAccessToken(req.user);
+    return { accessTokenCookie };
   }
 }

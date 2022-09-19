@@ -6,7 +6,9 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Role } from '../../commons/role/enum/role.enum';
+import { FriendTo } from './friends.entity';
 import { Posts } from './post.entity';
+import { Shares } from './share.entity';
 
 @Entity()
 export class Users extends BaseEntity {
@@ -46,4 +48,10 @@ export class Users extends BaseEntity {
 
   @Column({ nullable: true })
   currentHashedRefreshToken?: string;
+
+  @OneToMany(() => FriendTo, (friendto) => friendto.user)
+  friendto?: FriendTo[];
+
+  @OneToMany(() => Shares, (share: Shares) => share.user)
+  shares?: Shares[];
 }

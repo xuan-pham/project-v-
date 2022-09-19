@@ -8,7 +8,7 @@ export class ApiTokenCheckMiddleware implements NestMiddleware {
     private readonly userReponsitory: UserRepository,
     private readonly jwt: JwtService,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
     const bearerHeader = req.headers.authorization;

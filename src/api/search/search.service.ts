@@ -9,7 +9,7 @@ export class SearchService {
     private readonly userService: UserService,
   ) {}
 
-  async findAll(data) {
+  async findAll(data: string) {
     const [posts, users] = await Promise.all([
       this.postService.getDataQuery(data),
       this.userService.getDataQuery(data),

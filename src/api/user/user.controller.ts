@@ -12,11 +12,9 @@ import {
   Query,
   DefaultValuePipe,
   ParseIntPipe,
-  HttpCode,
   HttpStatus,
 } from '@nestjs/common';
 import { Users } from '../../config/entity/user.entity';
-import { DeleteResult } from 'typeorm';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/user.dto';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
@@ -26,6 +24,7 @@ import { storage } from '../../commons/image/imageProfile.image';
 import { RoleGuard } from '../../commons/role/guard/role.guard';
 import { Role } from '../../commons/role/enum/role.enum';
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { RequestWithUser } from './user.interface';
 
 @ApiBearerAuth()
 @ApiTags('user')
@@ -50,7 +49,7 @@ export class UserController {
 
   @UseGuards(JwtAuthenticationGuard)
   @Get('info')
-  show(@Request() req): Promise<Users[]> {
+  show(@Request() req: RequestWithUser): Promise<Users[]> {
     const id = req.user.id;
     return this.userService.getAllInfo(+id);
   }
@@ -77,7 +76,7 @@ export class UserController {
   })
   @UseInterceptors(FileInterceptor('files', storage))
   async update(
-    @Request() req,
+    @Request() req: RequestWithUser,
     @Body() data: UpdateUserDto,
     @UploadedFile() files: Express.Multer.File,
   ) {

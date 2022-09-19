@@ -81,10 +81,4 @@ export class UserService {
   async getDataQuery(data) {
     return this.userReponsitory.queryBuilder(data);
   }
-
-  async setCurrentRefreshToken(refreshToken: string, userId: number) {
-    await this.userReponsitory.update(userId, {
-      currentHashedRefreshToken: refreshToken,
-    });
-  }
 }

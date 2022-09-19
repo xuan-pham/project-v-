@@ -1,10 +1,11 @@
+import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   IPaginationOptions,
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { Repository, DeleteResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Users } from '../../config/entity/user.entity';
 import { ChangeRole } from '../Authentication/dto/authentication.dto';
 import { UpdateUserDto } from './dto/user.dto';
@@ -45,7 +46,6 @@ export class UserRepository {
   }
 
   store(data: any) {
-    console.log(typeof data);
     return this.userRepository.save(data);
   }
 
@@ -61,8 +61,7 @@ export class UserRepository {
       .createQueryBuilder()
       .delete()
       .from(Users)
-      .where('id = :id', { id })
-      .execute();
+      .where('id = :id', { id });
   }
 
   confirmEmail(id: number) {
@@ -79,19 +78,43 @@ export class UserRepository {
     return builderUser.getMany();
   }
 
-  changeRoleUser(id: number, data: ChangeRole) {
-    console.log('HAHAHA11');
-    return this.userRepository
+  async changeRoleUser(id: number, data: ChangeRole) {
+    const user = await this.findById(id);
+    if (!user) throw new NotFoundException('user not exist');
+    const qb = this.userRepository
       .createQueryBuilder()
-      .update()
+      .update(Users)
+      .set({ role: data.role })
+      .where('id = :id', { id })
+      .execute();
+    return qb;
+  }
+
+  async updateRefreshToken(id: number, data: string) {
+    const user = await this.findById(id);
+    if (!user) throw new NotFoundException('user not exist');
+    const qb = this.userRepository
+      .createQueryBuilder()
+      .update(Users)
       .set({
-        role: data.role,
+        currentHashedRefreshToken: data,
       })
       .where('id = :id', { id })
       .execute();
+    return qb;
   }
 
-  // updateRefreshToken(id: number, data: string){
-  //   return this.userR
-  // };
+  async remoteUpdateRefreshToken(id: number) {
+    const user = await this.findById(id);
+    if (!user) throw new NotFoundException('user not exist');
+    const qb = this.userRepository
+      .createQueryBuilder()
+      .update(Users)
+      .set({
+        currentHashedRefreshToken: null,
+      })
+      .where('id = :id', { id })
+      .execute();
+    return qb;
+  }
 }

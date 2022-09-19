@@ -4,6 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { PostService } from '../post/post.service';
+import { RequestWithUser } from '../user/user.interface';
 import { UserService } from '../user/user.service';
 import { CommentRepository } from './comment.repository';
 import { CommentDto } from './dto/comment.dto';
@@ -20,7 +21,7 @@ export class CommentService {
     return obj && obj !== 'null' && obj !== 'undefined';
   };
 
-  async create(id: number, request, data: CommentDto) {
+  async create(id: number, request: RequestWithUser, data: CommentDto) {
     try {
       const userId = request.user.id;
       const post = await this.postService.getPostById(id);
@@ -67,5 +68,12 @@ export class CommentService {
       throw new UnauthorizedException('You do not own this comment');
     }
     return this.commentRepository.delete(comments);
+  }
+
+  async edit(id: number, request: RequestWithUser, comment: CommentDto) {
+    const userId = request.user.id;
+    const user = await this.userService.findById(userId);
+    if (user.id !== userId) throw new UnauthorizedException();
+    return this.commentRepository.update(id, comment);
   }
 }

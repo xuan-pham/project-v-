@@ -10,10 +10,11 @@ import { LocalStrategy } from '../Authentication/stratery/local.stratery';
 import { JwtStratery } from '../Authentication/stratery/jwt.stratery';
 import { AuthService } from '../Authentication/auth.service';
 import { JwtModule } from '@nestjs/jwt';
+import { FriendTo } from 'src/config/entity/friends.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Users, Posts, Comments]),
+    TypeOrmModule.forFeature([Users, Posts, Comments, FriendTo]),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: {

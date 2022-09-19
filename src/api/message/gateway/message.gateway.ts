@@ -36,7 +36,7 @@ export class MessageGateway {
   }
 
   @SubscribeMessage('findOneMessage')
-  findOne(@MessageBody() id: number) {
+  findOne(@MessageBody() id: string) {
     return this.messageService.findOne(id);
   }
 
@@ -55,7 +55,8 @@ export class MessageGateway {
     @MessageBody('name') name: string,
     @ConnectedSocket() client: Socket,
   ) {
-    return this.messageService.identify(name, client.id);
+    const roomId = 1;
+    return this.messageService.identify(name, client.id, roomId);
   }
 
   @SubscribeMessage('typing')
