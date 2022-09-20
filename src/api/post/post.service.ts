@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  HttpCode,
   HttpStatus,
   Injectable,
   NotFoundException,
@@ -21,36 +20,40 @@ export class PostService {
     return queryBuilder;
   }
 
-  async store(
-    id: number,
-    data: string,
-    files?: { images: Express.Multer.File[]; videos: Express.Multer.File[] },
-  ) {
-    const nameFilesImages = await files.images.map(({ filename }) => {
-      return filename;
-    }, []);
-    if (nameFilesImages.length > 12)
-      throw new BadRequestException(
-        'Exceed the allowable quantity, less than 12',
-      );
-    const nameFilesVideos = await files.videos.map(({ filename }) => {
-      return filename;
-    }, []);
-    if (nameFilesVideos.length > 5)
-      throw new BadRequestException(
-        'exceed the allowable quantity, less than 5',
-      );
+  // async store(
+  //   id: number,
+  //   data: string,
+  //   files?: { images: Express.Multer.File[]; videos: Express.Multer.File[] },
+  // ) {
+  //   const nameFilesImages = await files.images.map(({ filename }) => {
+  //     return filename;
+  //   }, []);
+  //   if (nameFilesImages.length > 12)
+  //     throw new BadRequestException(
+  //       'Exceed the allowable quantity, less than 12',
+  //     );
+  //   const nameFilesVideos = await files.videos.map(({ filename }) => {
+  //     return filename;
+  //   }, []);
+  //   if (nameFilesVideos.length > 5)
+  //     throw new BadRequestException(
+  //       'exceed the allowable quantity, less than 5',
+  //     );
 
-    const post = await this.postReponsitory.store(
-      id,
-      data,
-      nameFilesImages,
-      nameFilesVideos,
-    );
-    if (post.length === 0) {
-      throw new BadRequestException(`Can't create post`);
-    }
-    return post;
+  //   const post = await this.postReponsitory.store(
+  //     id,
+  //     data,
+  //     nameFilesImages,
+  //     nameFilesVideos,
+  //   );
+  //   if (post.length === 0) {
+  //     throw new BadRequestException(`Can't create post`);
+  //   }
+  //   return post;
+  // }
+
+  async store(data) {
+    await this.postReponsitory.store(data);
   }
 
   async update(

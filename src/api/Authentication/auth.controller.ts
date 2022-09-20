@@ -20,19 +20,19 @@ import {
   LoginDto,
 } from './dto/authentication.dto';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
-import { MailService } from '../mail/mail.service';
 import { JwtRefreshGuard } from './guard/jwt-refresh.guard';
 import { JwtAuthenticationGuard } from './guard/jwt-auth.guard';
 import { RequestWithUser } from '../user/user.interface';
 import { RoleGuard } from 'src/commons/role/guard/role.guard';
 import { Role } from 'src/commons/role/enum/role.enum';
+import { BullsService } from 'src/config/bulls/bulls.service';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(
+    private bullsService: BullsService,
     private readonly authService: AuthService,
-    private readonly mailService: MailService,
   ) {}
 
   @UseGuards(LocalAuthGuard)
@@ -44,7 +44,7 @@ export class AuthController {
   @Post('signup')
   async signUp(@Body() data: CreateAccount) {
     await this.authService.createAccount(data);
-    await this.mailService.sendUserConfirmation(data.email);
+    await this.bullsService.sendMailBull(data.email);
     return `Please check your email to activate your account`;
   }
 
@@ -67,7 +67,7 @@ export class AuthController {
   @Post('forgot-pass')
   async forgotPass(@Body() email: ForgotPassDto) {
     const info = await this.authService.forgotPass(email);
-    await this.mailService.sendPassConfirmation(info);
+    // await this.processQueue.add('forgot', info);
     return 'Please check your email';
   }
 

@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './config/database/database.module';
@@ -8,12 +8,13 @@ import { PostModule } from './api/post/post.module';
 import { CommentModule } from './api/comment/comment.module';
 import { AuthModule } from './api/Authentication/auth.module';
 import { MailModule } from './api/mail/mail.module';
-import { ApiTokenCheckMiddleware } from './commons/middleware/api-token-check.middleware';
 import { GoogleOauthModule } from './api/google-oauth/google-oauth.module';
 import { MessageModule } from './api/message/message.module';
 import { SearchModule } from './api/search/search.module';
 import { FriendsModule } from './api/friends/friends-folow.module';
 import { SharesModule } from './api/shares/shares.module';
+import { BullModule } from '@nestjs/bull';
+import { BullsModule } from './config/bulls/bulls.module';
 
 @Module({
   imports: [
@@ -31,6 +32,13 @@ import { SharesModule } from './api/shares/shares.module';
     SearchModule,
     FriendsModule,
     SharesModule,
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST,
+        port: Number(process.env.REDIS_PORT),
+      },
+    }),
+    BullsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -9,11 +9,12 @@ import { UserRepository } from '../user/user.repository';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStratery } from './stratery/jwt.stratery';
-import { MailModule } from '../mail/mail.module';
 import { JwtRefreshTokenStrategy } from './stratery/jwt-refresh.stratery';
+import { BullsModule } from 'src/config/bulls/bulls.module';
+
 @Module({
   imports: [
-    MailModule,
+    BullsModule,
     PassportModule,
     TypeOrmModule.forFeature([Users]),
     ConfigModule,

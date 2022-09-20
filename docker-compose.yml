@@ -9,3 +9,7 @@ services:
     - /data/postgres:/data/postgres
     env_file:
     - docker.env
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"

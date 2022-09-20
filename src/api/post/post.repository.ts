@@ -37,12 +37,12 @@ export class PostRepository {
     return paginate<Posts>(queryBuilder, option);
   }
 
-  store(id, data, nameFilesImages, nameFilesVideos) {
+  store(data) {
     return this.postRepository.save({
-      ...data,
-      author: id,
-      image: nameFilesImages,
-      videos: nameFilesVideos,
+      title: data.title,
+      author: data.authorId,
+      image: data.image,
+      videos: data.videos,
     });
   }
 

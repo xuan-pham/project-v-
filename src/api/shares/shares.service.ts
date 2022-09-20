@@ -17,7 +17,6 @@ export class SharesService {
 
   async add(id: number, userId: number) {
     const user = await this.userRepository.findById(userId);
-    console.log(user);
     if (!user) throw new NotFoundException('User not found');
     const post = await this.postRepository.findById(id);
     if (!post) throw new NotFoundException('Post not found ');
