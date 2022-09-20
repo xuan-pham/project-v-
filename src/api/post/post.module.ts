@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PostRepository } from './post.repository';
 import { Comments } from '../../config/entity/comment.entity';
 import { Users } from '../../config/entity/user.entity';
+import { BullsModule } from 'src/config/bulls/bulls.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { Users } from '../../config/entity/user.entity';
         expiresIn: process.env.JWT_EXPIRATION_TIME,
       },
     }),
+    BullsModule,
   ],
   controllers: [PostController],
   providers: [PostService, PostRepository],

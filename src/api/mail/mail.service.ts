@@ -3,15 +3,16 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { MailerService } from '@nestjs-modules/mailer';
 import { VerificationTokenPayload } from './interface/verificationTokenPayload.interface';
+
 @Injectable()
 export class MailService {
   constructor(
     private mailerService: MailerService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) { }
+  ) {}
 
-  async sendUserConfirmation(email: string) {
+  async sendUserConfirmation(email) {
     const payload: VerificationTokenPayload = { email };
     const token = this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_SECRET'),

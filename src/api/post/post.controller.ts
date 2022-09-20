@@ -25,11 +25,15 @@ import { Posts } from '../../config/entity/post.entity';
 
 import { RoleGuard } from '../../commons/role/guard/role.guard';
 import { Role } from '../../commons/role/enum/role.enum';
+import { BullsService } from 'src/config/bulls/bulls.service';
 @ApiBearerAuth()
 @ApiTags('post')
 @Controller('post')
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(
+    private readonly postService: PostService,
+    private bullsService: BullsService,
+  ) {}
 
   @Get()
   @UseGuards(RoleGuard(Role.Admin))
@@ -71,7 +75,10 @@ export class PostController {
   })
   @UseInterceptors(
     FileFieldsInterceptor(
-      [{ name: 'images' }, { name: 'videos' }],
+      [
+        { name: 'images', maxCount: 12 },
+        { name: 'videos', maxCount: 5 },
+      ],
       storagePost,
     ),
   )
@@ -82,7 +89,7 @@ export class PostController {
     files?: { images: Express.Multer.File[]; videos: Express.Multer.File[] },
   ) {
     const id = req.user.id;
-    await this.postService.store(+id, data, files);
+    await this.bullsService.uploadsImage(+id, data, files);
     return {
       status: HttpStatus.OK,
       message: `Successfully created`,
