@@ -26,6 +26,7 @@ import { Posts } from '../../config/entity/post.entity';
 import { RoleGuard } from '../../commons/role/guard/role.guard';
 import { Role } from '../../commons/role/enum/role.enum';
 import { BullsService } from 'src/config/bulls/bulls.service';
+import { ProcessService } from '../process/process.service';
 @ApiBearerAuth()
 @ApiTags('post')
 @Controller('post')
@@ -33,6 +34,7 @@ export class PostController {
   constructor(
     private readonly postService: PostService,
     private bullsService: BullsService,
+    private processService: ProcessService,
   ) {}
 
   @Get()
@@ -89,11 +91,9 @@ export class PostController {
     files?: { images: Express.Multer.File[]; videos: Express.Multer.File[] },
   ) {
     const id = req.user.id;
-    await this.bullsService.uploadsImage(+id, data, files);
-    return {
-      status: HttpStatus.OK,
-      message: `Successfully created`,
-    };
+    const idProcess = await this.processService.create();
+    await this.bullsService.uploadsImage(+id, +idProcess.id, data, files);
+    return { idProcess };
   }
 
   @UseGuards(JwtAuthenticationGuard)

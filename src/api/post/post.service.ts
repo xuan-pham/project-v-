@@ -7,10 +7,14 @@ import {
 import { PostRepository } from './post.repository';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { UpdatePostDto } from './dto/updatePost.dto';
+import { ProcessRepository } from '../process/process.repository';
 
 @Injectable()
 export class PostService {
-  constructor(private readonly postReponsitory: PostRepository) {}
+  constructor(
+    private readonly postReponsitory: PostRepository,
+    private processRepository: ProcessRepository,
+  ) {}
 
   async index(filter: string, options: IPaginationOptions) {
     const queryBuilder = await this.postReponsitory.index(filter, options);
@@ -52,8 +56,25 @@ export class PostService {
   //   return post;
   // }
 
-  async store(data) {
-    await this.postReponsitory.store(data);
+  async store(idProcess: number, data) {
+    try {
+      const check = await this.postReponsitory.store(data);
+      if (check) {
+        const status = {
+          status: 'Done',
+          log: {},
+        };
+        await this.processRepository.update(+idProcess, status);
+      }
+    } catch (error) {
+      if (error) {
+        const status = {
+          status: 'Error',
+          log: { error },
+        };
+        await this.processRepository.update(+idProcess, status);
+      }
+    }
   }
 
   async update(
@@ -112,7 +133,6 @@ export class PostService {
 
   async unblocked(id: number) {
     const post = await this.postReponsitory.findById(id);
-    console.log(post);
     if (post.isBlocked === false) throw new BadRequestException('unblock');
     return this.postReponsitory.unblocked(id);
   }

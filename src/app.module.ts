@@ -15,6 +15,7 @@ import { FriendsModule } from './api/friends/friends-folow.module';
 import { SharesModule } from './api/shares/shares.module';
 import { BullModule } from '@nestjs/bull';
 import { BullsModule } from './config/bulls/bulls.module';
+import { ProcessModule } from './api/process/process.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { BullsModule } from './config/bulls/bulls.module';
       },
     }),
     BullsModule,
+    ProcessModule,
   ],
   controllers: [AppController],
   providers: [AppService],

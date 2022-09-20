@@ -9,10 +9,13 @@ import { PostRepository } from './post.repository';
 import { Comments } from '../../config/entity/comment.entity';
 import { Users } from '../../config/entity/user.entity';
 import { BullsModule } from 'src/config/bulls/bulls.module';
+import { ProcessModule } from '../process/process.module';
+import { ProcessRepository } from '../process/process.repository';
+import { Process } from '../../config/entity/process.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Posts, Comments, Users]),
+    TypeOrmModule.forFeature([Posts, Comments, Users, Process]),
     ConfigModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
@@ -21,9 +24,10 @@ import { BullsModule } from 'src/config/bulls/bulls.module';
       },
     }),
     BullsModule,
+    ProcessModule,
   ],
   controllers: [PostController],
-  providers: [PostService, PostRepository],
+  providers: [PostService, PostRepository, ProcessRepository],
   exports: [PostService],
 })
 export class PostModule {}
