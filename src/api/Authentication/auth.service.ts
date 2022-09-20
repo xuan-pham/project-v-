@@ -58,6 +58,9 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found,Please SignUp');
+    }
     await this.verifyPass(pass, user.password);
     const { password, ...result } = user;
     return result;

@@ -32,13 +32,14 @@ export class BullsProcess {
         return filename;
       }, []),
     ]);
+    const idProcess = job.data.idProcess;
     const post = {
       author: job.data.id,
       title: job.data.data.title,
       image: nameFilesImages,
       videos: nameFilesVideos,
     };
-    return await this.postService.store(post);
+    await this.postService.store(+idProcess, post);
   }
 }
 

@@ -8,6 +8,7 @@ import { FriendTo } from '../entity/friends.entity';
 import { Shares } from '../entity/share.entity';
 import DatabaseLogger from './databaseLogger';
 import { Message } from '../entity/message.entity';
+import { Process } from '../entity/process.entity';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
@@ -21,7 +22,7 @@ import { Message } from '../entity/message.entity';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [Users, Posts, Comments, FriendTo, Shares, Message],
+        entities: [Users, Posts, Comments, FriendTo, Shares, Message, Process],
         synchronize: true,
       }),
     }),

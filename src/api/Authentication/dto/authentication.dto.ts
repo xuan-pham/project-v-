@@ -34,7 +34,7 @@ export class LoginDto {
   email: string;
 
   @ApiProperty({
-    example: '123456',
+    example: '123',
   })
   @IsString()
   @IsNotEmpty()

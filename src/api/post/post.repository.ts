@@ -40,7 +40,7 @@ export class PostRepository {
   store(data) {
     return this.postRepository.save({
       title: data.title,
-      author: data.authorId,
+      author: data.author,
       image: data.image,
       videos: data.videos,
     });
