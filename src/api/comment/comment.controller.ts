@@ -8,10 +8,8 @@ import {
   Post,
   Put,
   Request,
-  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthenticationGuard } from '../Authentication/guard/jwt-auth.guard';
 import { RequestWithUser } from '../user/user.interface';
 import { CommentService } from './comment.service';
 import { CommentDto } from './dto/comment.dto';
@@ -21,50 +19,73 @@ import { CommentDto } from './dto/comment.dto';
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
-  @Post('post/:id')
-  @UseGuards(JwtAuthenticationGuard)
-  createComment(
-    @Param('id') id: string,
-    @Request() req: RequestWithUser,
-    @Body() data: CommentDto,
-  ) {
-    return this.commentService.create(+id, req, data);
-  }
-
   //@Query('page') page: number
   @Get('post/:id')
-  showCommentsByPost(@Param('id') id: string) {
-    return this.commentService.showByPost(+id);
+  async showCommentsByPost(@Param('id') id: string) {
+    const comments = await this.commentService.showByPost(+id);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Successful',
+      data: comments,
+    };
+  }
+
+  @Post('post/:id')
+  async createComment(
+    @Param('id') id: string,
+    @Request() req: RequestWithUser,
+    @Body() data: CommentDto
+  ) {
+    const comments = await this.commentService.create(+id, req, data);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Successful',
+      data: comments,
+    };
   }
 
   //@Query('page') page: number;
   @Get('user/:id')
-  showCommentsByUser(@Param('id') id: string) {
-    return this.commentService.showByUser(+id);
+  async showCommentsByUser(@Param('id') id: string) {
+    const comments = await this.commentService.showByUser(+id);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Successful',
+      data: comments,
+    };
   }
 
   @Get(':id')
-  showComment(@Param('id') id: string) {
-    return this.commentService.index(+id);
+  async showComment(@Param('id') id: string) {
+    const comments = await this.commentService.index(+id);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Successful',
+      data: comments,
+    };
   }
 
   @Put('edit-comment/:id')
-  @UseGuards(JwtAuthenticationGuard)
   async editComment(
     @Param('id') id: string,
     @Request() req: RequestWithUser,
-    @Body() comment: CommentDto,
+    @Body() comment: CommentDto
   ) {
     await this.commentService.edit(+id, req, comment);
     return {
       status: HttpStatus.OK,
-      message: 'Comment updated successfully',
+      message: 'Successful',
+      data: {},
     };
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthenticationGuard)
-  delete(@Param('id') id: string, @Request() req: Request) {
-    return this.commentService.delete(+id, req);
+  async delete(@Param('id') id: string, @Request() req: Request) {
+    await this.commentService.delete(+id, req);
+    return {
+      status: HttpStatus.OK,
+      message: 'Successful',
+      data: {},
+    };
   }
 }

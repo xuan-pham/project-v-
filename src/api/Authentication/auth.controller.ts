@@ -26,26 +26,32 @@ import { RequestWithUser } from '../user/user.interface';
 import { RoleGuard } from 'src/commons/role/guard/role.guard';
 import { Role } from 'src/commons/role/enum/role.enum';
 import { BullsService } from 'src/config/bulls/bulls.service';
+import { Public } from '../../commons/public-route/public-key';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(
     private bullsService: BullsService,
-    private readonly authService: AuthService,
+    private readonly authService: AuthService
   ) {}
-
+  @Public()
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiBody({ type: LoginDto })
   async login(@Request() req) {
     return this.authService.logIn(req.user);
   }
+
+  @Public()
   @Post('signup')
   async signUp(@Body() data: CreateAccount) {
     await this.authService.createAccount(data);
     await this.bullsService.sendMailBull(data.email);
-    return `Please check your email to activate your account`;
+    return {
+      statusCode: HttpStatus.OK,
+      message: `Please check your email to activate your account`,
+    };
   }
 
   @ApiBearerAuth()
@@ -57,37 +63,54 @@ export class AuthController {
     return;
   }
 
+  @Public()
   @Get('confirm')
   async confirm(@Query('token') token: string) {
     const email = await this.authService.decodeConfirmationToken(token);
     await this.authService.confirmEmail(email);
-    return `Account activation successful`;
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Your email has been confirmed successfully',
+    };
   }
 
+  @Public()
   @Post('forgot-pass')
   async forgotPass(@Body() email: ForgotPassDto) {
     const info = await this.authService.forgotPass(email);
-    // await this.processQueue.add('forgot', info);
-    return 'Please check your email';
+    await this.bullsService.sendForgotBull(info);
+    return { statusCode: 200, message: 'Please check your email' };
   }
 
+  @Public()
   @Post('change-pass')
   async changePass(@Query('token') token: string, @Body() data: ChangePassDto) {
     const email = await this.authService.decodeConfirmationToken(token);
     await this.authService.changePass(email, data);
-    return `Change password successfully`;
+    return {
+      statusCode: HttpStatus.OK,
+      message: `Successful`,
+      data: {},
+    };
   }
+
   @ApiBearerAuth()
   @Post('change-role/:id')
   @UseGuards(RoleGuard(Role.Admin))
-  @UseGuards(JwtAuthenticationGuard)
-  async changeRole(@Param('id') id: string, @Body() data: ChangeRole) {
-    await this.authService.changeRole(+id, data);
+  async changeRole(
+    @Param('id') id: string,
+    @Body() data: ChangeRole,
+    @Req() req: RequestWithUser
+  ) {
+    const roleId = req.user.id;
+    await this.authService.changeRole(+id, data, +roleId);
     return {
-      status: HttpStatus.OK,
-      messages: 'Change role successfully',
+      statusCode: HttpStatus.OK,
+      messages: 'Successful',
+      data: {},
     };
   }
+
   @ApiBearerAuth()
   @Get('refresh')
   @UseGuards(JwtRefreshGuard)

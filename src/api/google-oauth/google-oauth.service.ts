@@ -6,8 +6,8 @@ import { UserService } from '../user/user.service';
 export class GoogleOauthService {
   constructor(
     private readonly userService: UserService,
-    private readonly authService: AuthService,
-  ) { }
+    private readonly authService: AuthService
+  ) {}
 
   async googleLogin(request) {
     return this.createAccountGoogle(request.user);

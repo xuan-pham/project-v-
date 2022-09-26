@@ -14,7 +14,7 @@ export class CommentService {
   constructor(
     private readonly commentRepository: CommentRepository,
     private readonly userService: UserService,
-    private readonly postService: PostService,
+    private readonly postService: PostService
   ) {}
 
   isRealValue = (obj) => {
@@ -31,7 +31,9 @@ export class CommentService {
         post,
         author: user,
       };
-      return this.commentRepository.create(comment);
+      const comments = await this.commentRepository.create(comment);
+      delete comments.post;
+      return comments;
     } catch (error) {
       throw new BadRequestException(error.message);
     }

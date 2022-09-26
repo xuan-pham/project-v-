@@ -8,7 +8,7 @@ import { CommentDto } from './dto/comment.dto';
 export class CommentRepository {
   constructor(
     @InjectRepository(Comments)
-    private readonly commentRepository: Repository<Comments>,
+    private readonly commentRepository: Repository<Comments>
   ) {}
 
   async findPost(id: number) {

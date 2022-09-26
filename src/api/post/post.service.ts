@@ -7,14 +7,10 @@ import {
 import { PostRepository } from './post.repository';
 import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { UpdatePostDto } from './dto/updatePost.dto';
-import { ProcessRepository } from '../process/process.repository';
 
 @Injectable()
 export class PostService {
-  constructor(
-    private readonly postReponsitory: PostRepository,
-    private processRepository: ProcessRepository,
-  ) {}
+  constructor(private readonly postReponsitory: PostRepository) {}
 
   async index(filter: string, options: IPaginationOptions) {
     const queryBuilder = await this.postReponsitory.index(filter, options);
@@ -56,31 +52,14 @@ export class PostService {
   //   return post;
   // }
 
-  async store(idProcess: number, data) {
-    try {
-      const check = await this.postReponsitory.store(data);
-      if (check) {
-        const status = {
-          status: 'Done',
-          log: {},
-        };
-        await this.processRepository.update(+idProcess, status);
-      }
-    } catch (error) {
-      if (error) {
-        const status = {
-          status: 'Error',
-          log: { error },
-        };
-        await this.processRepository.update(+idProcess, status);
-      }
-    }
+  async store(data) {
+    return this.postReponsitory.store(data);
   }
 
   async update(
     id: number,
     data: UpdatePostDto,
-    files?: { images: Express.Multer.File[]; videos: Express.Multer.File[] },
+    files?: { images: Express.Multer.File[]; videos: Express.Multer.File[] }
   ) {
     const nameFilesImages = await files.images.map(({ filename }) => {
       return filename;
@@ -93,7 +72,7 @@ export class PostService {
       id,
       data,
       nameFilesImages,
-      nameFilesVideos,
+      nameFilesVideos
     );
     return {
       status: HttpStatus.OK,

@@ -18,7 +18,7 @@ export class MessageService {
   clientToUser = {};
   identify(name: string, clientId: string, roomId: number) {
     this.clientToUser[clientId] = name;
-    console.log(roomId);
+
     return Object.values(this.clientToUser);
   }
 
@@ -37,13 +37,15 @@ export class MessageService {
   }
 
   findAll() {
-    return this.messages;
+    return this.messageReponsitory._findAll();
+    // const message = await this.messageReponsitory._findAll();
   }
 
   async findOne(query) {
     if (query.idUser || query.idRoom || query.name) {
       const message = await this.messageReponsitory._find(query);
-      if (message.length === 0) throw new NotFoundException();
+      if (message.length === 0)
+        throw new NotFoundException('message not found');
       return message;
     }
     throw new BadRequestException();

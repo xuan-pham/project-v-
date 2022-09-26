@@ -11,6 +11,8 @@ import { JwtStratery } from '../Authentication/stratery/jwt.stratery';
 import { AuthService } from '../Authentication/auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { FriendTo } from 'src/config/entity/friends.entity';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthenticationGuard } from '../Authentication/guard/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -29,6 +31,10 @@ import { FriendTo } from 'src/config/entity/friends.entity';
     LocalStrategy,
     JwtStratery,
     AuthService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthenticationGuard,
+    },
   ],
   exports: [UserService],
 })

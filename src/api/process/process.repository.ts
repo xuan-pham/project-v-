@@ -7,7 +7,7 @@ import { Process } from '../../config/entity/process.entity';
 export class ProcessRepository {
   constructor(
     @InjectRepository(Process)
-    private reponsitory: Repository<Process>,
+    private reponsitory: Repository<Process>
   ) {}
 
   async create(data) {
@@ -19,6 +19,7 @@ export class ProcessRepository {
   }
 
   async update(id: number, status) {
+    // console.log('log >>>>>>' + status.log);
     await this.reponsitory.update(id, {
       status: status.status,
       log: status.log,

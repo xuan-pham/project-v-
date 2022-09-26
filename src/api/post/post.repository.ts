@@ -11,7 +11,7 @@ import {
 export class PostRepository {
   constructor(
     @InjectRepository(Posts)
-    private postRepository: Repository<Posts>,
+    private postRepository: Repository<Posts>
   ) {}
 
   findById(id: number) {
@@ -29,7 +29,7 @@ export class PostRepository {
 
   index(
     filter: string,
-    option: IPaginationOptions,
+    option: IPaginationOptions
   ): Promise<Pagination<Posts>> {
     const queryBuilder = this.postRepository.createQueryBuilder('post');
     queryBuilder.where('post.title LIKE :filter', { filter: `%${filter}%` });

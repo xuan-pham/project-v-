@@ -11,6 +11,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStratery } from './stratery/jwt.stratery';
 import { JwtRefreshTokenStrategy } from './stratery/jwt-refresh.stratery';
 import { BullsModule } from 'src/config/bulls/bulls.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthenticationGuard } from './guard/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -32,6 +34,10 @@ import { BullsModule } from 'src/config/bulls/bulls.module';
     UserRepository,
     JwtStratery,
     JwtRefreshTokenStrategy,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthenticationGuard,
+    },
   ],
   exports: [AuthService],
 })

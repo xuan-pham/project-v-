@@ -26,20 +26,25 @@ export class FriendsController {
   @UseGuards(JwtAuthenticationGuard)
   async getList(@Request() req: RequestWithUser) {
     const userId = req.user.id;
-    return this.friendService.getListFolow(+userId);
+    const friends = await this.friendService.getListFolow(+userId);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'successful',
+      data: friends,
+    };
   }
 
   @Post('add-friends')
   @UseGuards(JwtAuthenticationGuard)
   async addFriend(
     @Request() req: RequestWithUser,
-    @Body() friendId: CreateFriends,
+    @Body() friendId: CreateFriends
   ) {
     const userId = req.user.id;
     const id = friendId.id;
     await this.friendService.addFriend(+userId, +id);
     return {
-      status: HttpStatus.OK,
+      statusCode: HttpStatus.OK,
       message: 'successful',
     };
   }
@@ -49,7 +54,7 @@ export class FriendsController {
   async acceptFriend(@Param('id') id: string) {
     await this.friendService.acceptFriend(+id);
     return {
-      status: HttpStatus.OK,
+      statusCode: HttpStatus.OK,
       message: 'successful',
     };
   }

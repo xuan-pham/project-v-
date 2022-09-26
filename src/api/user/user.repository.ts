@@ -13,7 +13,7 @@ import { UpdateUserDto } from './dto/user.dto';
 export class UserRepository {
   constructor(
     @InjectRepository(Users)
-    private userRepository: Repository<Users>,
+    private userRepository: Repository<Users>
   ) {}
 
   getDataUser(id: number) {
@@ -35,7 +35,7 @@ export class UserRepository {
 
   index(
     filter: string,
-    option: IPaginationOptions,
+    option: IPaginationOptions
   ): Promise<Pagination<Users>> {
     const queryBuilder = this.userRepository
       .createQueryBuilder('user')
@@ -79,8 +79,6 @@ export class UserRepository {
   }
 
   async changeRoleUser(id: number, data: ChangeRole) {
-    const user = await this.findById(id);
-    if (!user) throw new NotFoundException('user not exist');
     const qb = this.userRepository
       .createQueryBuilder()
       .update(Users)

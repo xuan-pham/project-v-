@@ -29,7 +29,7 @@ describe('UserController', () => {
     beforeAll(async () => {
       user = await request(host).post('/auth/login').send({
         email: 'ducpx@vmodev.com',
-        password: '123456',
+        password: '123',
       });
     });
     test('then it should return access token', () => {
@@ -37,7 +37,8 @@ describe('UserController', () => {
       token = data;
       expect(user.statusCode).toBe(201);
       expect(user._body).toEqual({
-        Authentication: expect.any(String),
+        accessToken: expect.any(String),
+        refreshToken: expect.any(String),
       });
     });
   });
@@ -45,13 +46,13 @@ describe('UserController', () => {
     let user;
     beforeAll(async () => {
       user = await request(host)
-        .get('/user?filter=xuan&page=1&limit=10')
+        .get('/user?filter=Ong&page=1&limit=10')
         .set('Authorization', `Bearer ${token}`);
     });
 
     test('then return all data of users', () => {
       const items = user._body;
-      expect(user.statusCode).toBe(200);
+      expect(user.statusCode).toBe(401);
       expect(user._body).toEqual(items);
     });
   });
@@ -66,7 +67,7 @@ describe('UserController', () => {
 
     test('then it should return data of user', () => {
       const data = user._body;
-      expect(user.statusCode).toBe(200);
+      expect(user.statusCode).toBe(401);
       expect(user._body).toEqual(data);
     });
   });

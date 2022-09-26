@@ -14,16 +14,13 @@ import {
   ParseIntPipe,
   HttpStatus,
 } from '@nestjs/common';
-import { Users } from '../../config/entity/user.entity';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/user.dto';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { JwtAuthenticationGuard } from '../Authentication/guard/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { storage } from '../../commons/image/imageProfile.image';
 import { RoleGuard } from '../../commons/role/guard/role.guard';
 import { Role } from '../../commons/role/enum/role.enum';
-import { Pagination } from 'nestjs-typeorm-paginate';
 import { RequestWithUser } from './user.interface';
 
 @ApiBearerAuth()
@@ -34,32 +31,35 @@ export class UserController {
 
   @Get()
   @UseGuards(RoleGuard(Role.Admin))
-  @UseGuards(JwtAuthenticationGuard)
-  getDataUser(
+  // @UseGuards(JwtAuthenticationGuard)
+  async getDataUser(
     @Query('filter') filter: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-  ): Promise<Pagination<Users>> {
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number
+  ) {
     limit = limit > 100 ? 100 : limit;
-    return this.userService.getUsers(filter, {
+    const users = await this.userService.getUsers(filter, {
       page,
       limit,
     });
+    return {
+      statusCode: 200,
+      message: 'successful',
+      data: users,
+    };
   }
 
-  @UseGuards(JwtAuthenticationGuard)
   @Get('info')
-  show(@Request() req: RequestWithUser): Promise<Users[]> {
+  async show(@Request() req: RequestWithUser) {
     const id = req.user.id;
-    return this.userService.getAllInfo(+id);
+    const users = await this.userService.getAllInfo(+id);
+    return {
+      statusCode: 200,
+      messages: 'successful',
+      data: users,
+    };
   }
 
-  // @Post('create')
-  // create(@Body() data: CreateAccount) {
-  //   return this.userService.store(data);
-  // }
-
-  @UseGuards(JwtAuthenticationGuard)
   @Put('update')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -78,23 +78,24 @@ export class UserController {
   async update(
     @Request() req: RequestWithUser,
     @Body() data: UpdateUserDto,
-    @UploadedFile() files: Express.Multer.File,
+    @UploadedFile() files: Express.Multer.File
   ) {
     const id = req.user.id;
     await this.userService.update(+id, data, files);
     return {
       status: HttpStatus.OK,
-      message: 'successful update',
+      message: 'Successful',
+      data: {},
     };
   }
 
-  @UseGuards(JwtAuthenticationGuard)
   @Delete('delete/:id')
   async destroy(@Param('id') id: number) {
     await this.userService.delete(+id);
     return {
       status: HttpStatus.OK,
-      message: 'Successful Delete',
+      message: 'Successful',
+      data: {},
     };
   }
 }

@@ -20,7 +20,7 @@ export class AuthService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
 
   async logIn(request: LoginDto) {
@@ -37,9 +37,11 @@ export class AuthService {
       refreshToken,
     };
   }
+
   async logOut(id: number) {
     return this.userRepository.remoteUpdateRefreshToken(id);
   }
+
   async createAccount(data: CreateAccount) {
     const user = await this.userRepository.findByEmail(data.email);
     if (user) {
@@ -99,7 +101,7 @@ export class AuthService {
     const user = await this.userRepository.findByEmail(email);
     if (!user.isStatus) {
       throw new BadRequestException(
-        'Account is not active,Please check your email again',
+        'Account is not active,Please check your email again'
       );
     }
     delete user.password;
@@ -159,7 +161,11 @@ export class AuthService {
     return this.userRepository.confirmPass(user.id, pass);
   }
 
-  changeRole(id: number, data: ChangeRole) {
+  async changeRole(id: number, data: ChangeRole, roleId: number) {
+    const user = await this.userRepository.findById(id);
+    if (user.id === roleId)
+      throw new BadRequestException('User canrt not change role your account');
+    if (!user) throw new NotFoundException('User not exist');
     return this.userRepository.changeRoleUser(id, data);
   }
 }

@@ -7,7 +7,7 @@ import { Repository } from 'typeorm';
 export class MessageReponsitory {
   constructor(
     @InjectRepository(Message)
-    private reponsitory: Repository<Message>,
+    private reponsitory: Repository<Message>
   ) {}
 
   async add(roomId: string, userId: string, userName: string, body: string) {
@@ -31,6 +31,15 @@ export class MessageReponsitory {
       .select('message')
       .from(Message, 'message')
       .where(query)
+      .getMany();
+    return qb;
+  }
+
+  async _findAll() {
+    const qb = await this.reponsitory
+      .createQueryBuilder()
+      .select('message')
+      .from(Message, 'message')
       .getMany();
     return qb;
   }

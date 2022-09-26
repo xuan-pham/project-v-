@@ -22,8 +22,13 @@ export class SharesController {
 
   @Get('/:id')
   @UseGuards(JwtAuthenticationGuard)
-  getShare(@Query('id') id: string) {
-    return this.shareService.getList(+id);
+  async getShare(@Query('id') id: string) {
+    const shares = await this.shareService.getList(+id);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'successful',
+      data: shares,
+    };
   }
 
   @Post()

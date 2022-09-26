@@ -23,7 +23,7 @@ export class MessageGateway {
   @SubscribeMessage('createMessage')
   async create(
     @MessageBody() createMessageDto: CreateMessageDto,
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: Socket
   ) {
     const message = this.messageService.create(createMessageDto, client.id);
     this.server.emit('message', message);
@@ -53,7 +53,7 @@ export class MessageGateway {
   @SubscribeMessage('join')
   joinRoom(
     @MessageBody('name') name: string,
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: Socket
   ) {
     const roomId = 1;
     return this.messageService.identify(name, client.id, roomId);
@@ -62,7 +62,7 @@ export class MessageGateway {
   @SubscribeMessage('typing')
   async typing(
     @MessageBody('isTyping') isTyping: boolean,
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: Socket
   ) {
     const name = this.messageService.getClientName(client.id);
     client.broadcast.emit('typing', { name, isTyping });

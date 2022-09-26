@@ -21,7 +21,7 @@ export class BullsService {
     id: number,
     idProcess: number,
     data: string,
-    files?: { images: Express.Multer.File[]; videos: Express.Multer.File[] },
+    files?: { images: Express.Multer.File[]; videos: Express.Multer.File[] }
   ) {
     const post = {
       id,

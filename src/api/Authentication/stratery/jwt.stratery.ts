@@ -9,7 +9,7 @@ import { TokenPayloadDto } from '../dto/tokenPayload.dto';
 export class JwtStratery extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     private readonly configService: ConfigService,
-    private readonly userRepository: UserRepository,
+    private readonly userRepository: UserRepository
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

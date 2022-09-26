@@ -12,7 +12,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-    }),
+    })
   );
   const configService = new ConfigService();
   const PORT = configService.get('PORT') || 8080;

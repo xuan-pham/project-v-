@@ -9,7 +9,7 @@ export class MailService {
   constructor(
     private mailerService: MailerService,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
 
   async sendUserConfirmation(email) {
@@ -19,7 +19,7 @@ export class MailService {
       expiresIn: `${this.configService.get('JWT_EXPIRATION_TIME')}`,
     });
     const url = `${this.configService.get(
-      'EMAIL_CONFIRMATION_URL',
+      'EMAIL_CONFIRMATION_URL'
     )}/auth/confirm?token=${token}`;
 
     await this.mailerService.sendMail({
@@ -36,7 +36,7 @@ export class MailService {
       expiresIn: `${this.configService.get('JWT_EXPIRATION_TIME')}`,
     });
     const url = `${this.configService.get(
-      'EMAIL_CONFIRMATION_URL',
+      'EMAIL_CONFIRMATION_URL'
     )}/auth/change-pass?token=${token}`;
 
     await this.mailerService.sendMail({
